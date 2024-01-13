@@ -26,14 +26,14 @@ if __name__ == "__main__":
             ttsEngine.setProperty("rate", 150)
 
 
-    while True:
-        voice_input = rec.record_and_recognize(recognizer, mic)
-        
-        command_type = cr.recognize_command(voice_input)
-        exec("commands." + command_type + "(voice_input)")
-        init_voice_input = voice_input
-        voice_input = f.query_to_list(voice_input)
+    # while True:
+        # voice_input = rec.record_and_recognize(recognizer, mic)
+    voice_input = "сколько сейчас время"
+    
+    command_class = cr.recognize_command(voice_input)
+    voice_output = commands.exec_nessesary_command(command_class)
 
-        print(voice_input)
-        ttsEngine.say("".join(voice_input))
-        ttsEngine.runAndWait()
+    print(voice_input)
+    print(voice_output)
+    ttsEngine.say(voice_output)
+    ttsEngine.runAndWait()

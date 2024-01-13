@@ -11,7 +11,7 @@ put_accent = True
 put_yo = True
 device = t.device('cuda' if t.cuda.is_available() else 'cpu')
 
-text = "Слушай, мне кажется, этой займет больше, чем 2 месяца."
+text = "Текущее время на часах 01 49"
 
 for word in text.split():
     if word.isdigit():

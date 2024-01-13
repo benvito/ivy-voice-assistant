@@ -12,9 +12,11 @@ time:
     - подскажи сколько время
     - сколько времени
     - что у нас на часах
-  command: cmd_current_time
-  type_command: say
-  variations:
+  command_type: cmd
+  cmd_command: time /t
+  speech_output: true
+  speech_type: dynamic
+  speech_list:
     - На часах
     - Сейчас на часах
     - Сейчас
