@@ -1,5 +1,4 @@
 import func as f
-import phrases as phr
 import speech_recognition
 import recording as rec
 import pyttsx3
@@ -27,11 +26,14 @@ if __name__ == "__main__":
 
 
     # while True:
-        # voice_input = rec.record_and_recognize(recognizer, mic)
-    voice_input = "сколько сейчас время"
+    print('Listening...')
+    # voice_input = rec.record_and_recognize(recognizer, mic)
+    # print(voice_input)
+    voice_input = "выключи компьютер через два часа и тридцать пять минут"
+    # voice_input = "сколько сейчас время"
     
     command_class = cr.recognize_command(voice_input)
-    voice_output = commands.exec_nessesary_command(command_class)
+    voice_output = commands.exec_nessesary_command(command_class, voice_input)
 
     print(voice_input)
     print(voice_output)

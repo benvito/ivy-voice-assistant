@@ -53,11 +53,7 @@ def test_model(text):
         print(f"{class_} - {prob}")
 
 # train_model()
-# test_model("скажи сколько сейчас времени")
-# test_model("привет")
-# test_model("ку, сколько времени тебя не видел")
-# test_model("ты время видел")
-# test_model("привет, что у нас там на часах")
+# test_model("выключи компьютерчерез пятьдесят 1 час минут")
 
 def recognize_command(text : str) -> str or None:
     if not text:

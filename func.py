@@ -1,7 +1,134 @@
 from pymorphy2 import MorphAnalyzer
 from fuzzywuzzy import fuzz
+from num2words import num2words
+from config import *
+from ru_word2number import w2n
+import time
+
+
+from decorators import exec_timer
 
 WORD_MATCH_RATIO = 80
+
+def is_hour(word):
+    return word == 'час' or \
+            word == 'часа' or \
+            word == 'часов' or \
+            word == 'часик' or \
+            word == 'часика' or \
+            word == 'часиков'
+
+def is_minute(word):
+    return word == 'минута' or \
+            word == 'минут' or \
+            word == 'минуты' or \
+            word == 'минуток' or \
+            word == 'минутки' or \
+            word == 'минутку'
+
+def is_second(word):
+    return word == 'секунда' or \
+            word == 'секунд' or \
+            word == 'секунды' or \
+            word == 'секундок' or \
+            word == 'секундочек' or \
+            word == 'секундочку' or \
+            word == 'секундочки'
+
+def convert_to_seconds(time : [(str, str), ...]) -> int:
+    time_in_seconds = 0
+    for arg in time:
+        if is_hour(arg[-1]):
+            time_in_seconds += int(arg[0]) * 3600
+        elif is_minute(arg[-1]):
+            time_in_seconds += int(arg[0]) * 60
+        elif is_second(arg[-1]):
+            time_in_seconds += int(arg[0])
+    return time_in_seconds
+
+def convert_to_nanoseconds(re_arguments):
+    result = convert_to_seconds(re_arguments)
+    result = result * SECOND_TO_NANO
+    return result
+
+@exec_timer
+def word_to_num_in_string(text : str) -> str:
+    text = text.lower().split()
+    for i in range(len(text)):
+        try:
+            cur_number = w2n.word_to_num(text[i])
+            text[i] = str(cur_number)
+        except ValueError:
+            pass
+    
+    text_result = text
+    replace_index = None
+    delete_indexes = []
+
+    for i in range(len(text)):
+        cur_number = 0
+        if text[i].isdigit():
+            cur_number = int(text[i])
+            replace_index = i
+            if i < len(text) - 1:
+                for j in range(i+1, len(text)):
+                    if text[j].isdigit() and str(cur_number)[-1] == '0':
+                        cur_number += int(text[j])
+                        delete_indexes.append(j)
+                    else:
+                        text_result[replace_index] = str(cur_number)
+                        break
+
+    for del_index in sorted(delete_indexes, reverse=True):
+        text_result.pop(del_index)
+    text = ' '.join(text_result)
+    return text
+
+def contains_substring(list_of_strings, substring):
+   return any(substring in s for s in list_of_strings)
+
+def num_to_word_in_string(text : str) -> str:
+    for word in text.split():
+        if word.isdigit():
+            text = text.replace(word, num2words(word, lang="ru"))
+    return text
+def inflect_word_with_count(word : str, count : int) -> str:
+    morph = MorphAnalyzer()
+    morph_word = morph.parse(word)[0]
+    inflected_word = morph_word.make_agree_with_number(count).word
+    return inflected_word
+
+@exec_timer
+def time_fomat_for_string(text: str) -> str:
+    time_part = ''
+    time_delim = ':'
+
+    for i in range(len(text)):
+        if text[i] in TIME_DELIMITER:
+            time_delim = text[i]
+            if text[i-2].isdigit():
+                time_part += text[i-2]
+            time_part += text[i-1:i+1]
+            if text[i+1].isdigit():
+                time_part += text[i+1:i+3]
+            if text[i+3] in TIME_DELIMITER:
+                time_part += text[i+3:i+5]
+            break
+
+    time_part = time_part.split(time_delim)
+
+    time_words = ['час', 'минута', 'секунда']
+
+    time_result_string = ''
+
+    for i in range(len(time_part)):
+        if time_part[i].isdigit():
+            inflected_time_word = inflect_word_with_count(time_words[i], int(time_part[i]))
+            time_result_string += time_part[i] + ' ' + inflected_time_word
+        if i != len(time_part) - 1:
+            time_result_string += ' '
+
+    return time_result_string
 
 
 def word_is_in_list(word : str, text : list) -> int:
