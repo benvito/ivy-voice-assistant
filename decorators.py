@@ -1,4 +1,5 @@
 import time
+
 from config import SECOND_TO_NANO
 
 def exec_timer(function_execution):

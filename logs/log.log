@@ -1,0 +1,3 @@
+INFO:comtypes.client._code_cache:Imported existing <module 'comtypes.gen' from 'd:\\ProjectsProgramming\\Ivy\\venv\\lib\\site-packages\\comtypes\\gen\\__init__.py'>
+INFO:comtypes.client._code_cache:Using writeable comtypes cache directory: 'd:\ProjectsProgramming\Ivy\venv\lib\site-packages\comtypes\gen'
+CRITICAL:root:Command 'shutdown /a' returned non-zero exit status 1116.

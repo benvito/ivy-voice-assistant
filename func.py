@@ -1,11 +1,10 @@
 from pymorphy2 import MorphAnalyzer
 from fuzzywuzzy import fuzz
 from num2words import num2words
-from config import *
 from ru_word2number import w2n
 import time
 
-
+from config import *
 from decorators import exec_timer
 
 WORD_MATCH_RATIO = 80
@@ -99,7 +98,7 @@ def inflect_word_with_count(word : str, count : int) -> str:
     return inflected_word
 
 @exec_timer
-def time_fomat_for_string(text: str) -> str:
+def time_format_for_string(text: str) -> str:
     time_part = ''
     time_delim = ':'
 
@@ -149,7 +148,6 @@ def round_word_by_similarity(word_predicted : str, word_expected : str) -> str:
     
 def is_this_word(word_predicted : str, word_expected : str) -> bool:
     ratio = diff_words(word_predicted, word_expected)
-    print(word_predicted, word_expected, ' - ', ratio)
     if ratio >= WORD_MATCH_RATIO:
         return True
     # else:

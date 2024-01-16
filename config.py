@@ -13,3 +13,6 @@ STATIC = "static"
 TIME_DELIMITER = "-:."
 CMD_ARGS = "cmd_args"
 SECOND_TO_NANO = 1e+9
+
+ERROR = "error"
+ERROR_CODE = "error_code"
