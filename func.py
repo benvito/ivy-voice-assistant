@@ -87,6 +87,8 @@ def contains_substring(list_of_strings, substring):
    return any(substring in s for s in list_of_strings)
 
 def num_to_word_in_string(text : str) -> str:
+    if not text:
+        return None
     for word in text.split():
         if word.isdigit():
             text = text.replace(word, num2words(word, lang="ru"))

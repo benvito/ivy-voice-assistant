@@ -12,5 +12,6 @@ def init(name : str, rate : int) -> pyttsx3.Engine:
     return ttsEngine
 
 def say(text : str):
-    ttsEngine.say(text)
-    ttsEngine.runAndWait()
+    if text:
+        ttsEngine.say(text)
+        ttsEngine.runAndWait()
