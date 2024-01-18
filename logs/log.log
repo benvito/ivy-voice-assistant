@@ -1,4 +1,2 @@
 INFO:comtypes.client._code_cache:Imported existing <module 'comtypes.gen' from 'd:\\ProjectsProgramming\\Ivy\\venv\\lib\\site-packages\\comtypes\\gen\\__init__.py'>
 INFO:comtypes.client._code_cache:Using writeable comtypes cache directory: 'd:\ProjectsProgramming\Ivy\venv\lib\site-packages\comtypes\gen'
-CRITICAL:root:RegexArgumentError in shutdown_timer:Error_code=11:\b(\d+)\s+(час\w*|минут\w*|секунд\w*):Совпадений регулярного выражения не найдено в вводе. Пожалуйста, проверяйте правильность регулярного выражения на стронних ресурсах, прежде чем его использовать. Также возможно, что в фразе нет нужного аргумента.
-CRITICAL:root:ArgumentError in shutdown_timer:Error_code=10:\b(\d+)\s+(час\w*|минут\w*|секунд\w*):Не удалось распознать аргумент. Проверьте правильность написание регулярного выражения, или ввод на наличие нужного выражения.

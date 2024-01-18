@@ -24,9 +24,10 @@ if __name__ == "__main__":
     print('Listening...')
     # voice_input = rec.record_and_recognize(recognizer, mic)
     # print(voice_input)
-    voice_input = "выключи компьютер через абабаба часа"
+    # voice_input = "выключи компьютер через абабаба часа"
     # voice_input = "не выключай комп"
     # voice_input = "сколько сейчас время"
+    voice_input = "Привет"
     
     command_class = cr.recognize_command(voice_input)
     voice_output = commands.exec_nessesary_command(command_class, voice_input)

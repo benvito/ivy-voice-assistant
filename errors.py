@@ -19,7 +19,7 @@ class RegexArgumentError(Exception):
             tts.say(self.say_message)
 
     def log_critical_error(self):
-        logging.critical(f"{self.__class__.__name__} in {self.command_class}:Error_code={self.code}:{self.argument}:{self.message}.")
+        logging.critical(f"{self.__class__.__name__} in '{self.command_class}':Error_code={self.code}:{self.argument}:{self.message}.")
 
     def proccess_critical_error(self):
         self.say()
@@ -49,7 +49,7 @@ class ArgumentError(Exception):
             tts.say(self.say_message)
 
     def log_critical_error(self):
-        logging.critical(f"{self.__class__.__name__} in {self.command_class}:Error_code={self.code}:{self.argument}:{self.message}.")
+        logging.critical(f"{self.__class__.__name__} in '{self.command_class}':Error_code={self.code}:{self.argument}:{self.message}.")
 
     def proccess_critical_error(self):
         self.say()
@@ -81,7 +81,7 @@ class ExecCliCommandError(Exception):
             tts.say(self.say_message)
 
     def log_critical_error(self):
-        logging.critical(f"{self.__class__.__name__} in {self.command_class}:Error_code={self.code}:STDOUT={self.output}:{self.command}:{self.message}.")
+        logging.critical(f"{self.__class__.__name__} in '{self.command_class}':Error_code={self.code}:STDOUT={self.output}:{self.command}:{self.message}.")
 
     def proccess_critical_error(self):
         self.say()
@@ -92,3 +92,34 @@ class ExecCliCommandError(Exception):
 
     def __repr__(self):
         return self.message
+
+class CommandAccessError(Exception):
+    def __init__(self, 
+                 command_class='', 
+                 code=40,
+                 access_to='',
+                 message='Ошибка доступа к информации о команде. Пожалуйста, проверьте правильность написания команды и ее параметров.', 
+                 say_message='Ошибка доступа к информации о команде.'):
+        self.code = code
+        self.message = message
+        self.say_message = say_message
+        self.command_class = command_class
+        self.access_to = access_to
+
+    def say(self):
+        if self.say_message != '':
+            tts.say(self.say_message)
+
+    def log_critical_error(self):
+        logging.critical(f"{self.__class__.__name__} in '{self.command_class}' access to {self.access_to}:Error_code={self.code}:{self.message}.")
+
+    def proccess_critical_error(self):
+        self.say()
+        self.log_critical_error()
+
+    def __str__(self):
+        return self.message
+
+    def __repr__(self):
+        return self.message
+    

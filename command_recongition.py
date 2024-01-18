@@ -53,7 +53,7 @@ def test_model(text):
         print(f"{class_} - {prob}")
 
 # train_model()
-# test_model("пожалуйста умоляю великий бот ассистент извольте отключть персональный компьютер через два часа")
+# test_model("не выключай компьютер через два часа")
 
 def recognize_command(text : str) -> str or None:
     if not text:

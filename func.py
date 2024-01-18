@@ -93,6 +93,8 @@ def num_to_word_in_string(text : str) -> str:
         if word.isdigit():
             text = text.replace(word, num2words(word, lang="ru"))
     return text
+
+@exec_timer
 def inflect_word_with_count(word : str, count : int) -> str:
     morph = MorphAnalyzer()
     morph_word = morph.parse(word)[0]

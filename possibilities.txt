@@ -8,3 +8,8 @@
 8. Время
 9. Напоминания на время, с оповещением
 10. Википедия
+
+TODO:
+    - speech_args
+    - static speech
+    - time_format_for_string занимает очень много времени
