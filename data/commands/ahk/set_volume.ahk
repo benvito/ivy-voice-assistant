@@ -1,0 +1,1 @@
+SoundSetVolume A_Args[1]

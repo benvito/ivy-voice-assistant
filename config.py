@@ -13,6 +13,18 @@ STATIC = "static"
 TIME_DELIMITER = "-:."
 CMD_ARGS = "cmd_args"
 SECOND_TO_NANO = 1e+9
+OPEN_LINK = "openLink"
+LINK = "link"
+WIKIPEDIA = "wikipedia"
+PHRASES = "phrases"
+RANDOM = "random"
+ARGS_SEP = "args_sep"
+ADD_EACH = "add_each"
+CONCAT = "concat"
+AHK = "ahk"
+AHK_PATH = "ahk_path"
+PICK_FIRST_MATCH = "pick_first_match"
+
 
 ERROR = "error"
 ERROR_CODE = "error_code"

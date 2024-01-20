@@ -2,12 +2,24 @@ from pymorphy2 import MorphAnalyzer
 from fuzzywuzzy import fuzz
 from num2words import num2words
 from ru_word2number import w2n
+from text_to_num import alpha2digit
 import time
+import re
 
 from config import *
 from decorators import exec_timer
 
 WORD_MATCH_RATIO = 80
+
+@exec_timer
+def remove_brackets(text):
+    pattern = r'\([^()]*\)'
+    while re.search(pattern, text):
+        text = re.sub(pattern, '', text)
+    return text
+
+def list_to_string(list: list) -> str:
+    return ' '.join(list)
 
 def is_hour(word):
     return word == 'час' or \
@@ -52,35 +64,37 @@ def convert_to_nanoseconds(re_arguments):
 
 @exec_timer
 def word_to_num_in_string(text : str) -> str:
-    text = text.lower().split()
-    for i in range(len(text)):
-        try:
-            cur_number = w2n.word_to_num(text[i])
-            text[i] = str(cur_number)
-        except ValueError:
-            pass
+    text = alpha2digit(text, 'ru')
+    # for i in range(len(text)):
+    #     try:
+    #         cur_number = w2n.word_to_num(text[i])
+    #         text[i] = str(cur_number)
+    #     except ValueError:
+    #         pass
     
-    text_result = text
-    replace_index = None
-    delete_indexes = []
-
-    for i in range(len(text)):
-        cur_number = 0
-        if text[i].isdigit():
-            cur_number = int(text[i])
-            replace_index = i
-            if i < len(text) - 1:
-                for j in range(i+1, len(text)):
-                    if text[j].isdigit() and str(cur_number)[-1] == '0':
-                        cur_number += int(text[j])
-                        delete_indexes.append(j)
-                    else:
-                        text_result[replace_index] = str(cur_number)
-                        break
-
-    for del_index in sorted(delete_indexes, reverse=True):
-        text_result.pop(del_index)
-    text = ' '.join(text_result)
+    # text_result = text
+    # replace_index = None
+    # delete_indexes = []
+    # print(text)
+    # for i in range(len(text)):
+    #     cur_number = 0
+    #     if text[i].isdigit():
+    #         cur_number = int(text[i])
+    #         replace_index = i
+    #         if i < len(text) - 2:
+    #             for j in range(i+1, len(text)):
+    #                 print(text[j])
+    #                 if text[j].isdigit() and str(cur_number)[-1] == '0' and cur_number >= 20 and len(str(cur_number)) > len(text[j]):
+    #                     cur_number += int(text[j])
+    #                     delete_indexes.append(j)
+    #                 else:
+    #                     text_result[replace_index] = str(cur_number)
+    #                     break
+    # print(delete_indexes)
+    # for del_index in sorted(delete_indexes, reverse=True):
+    #     text_result.pop(del_index)
+    # print(text)
+    # text = ' '.join(text_result)
     return text
 
 def contains_substring(list_of_strings, substring):

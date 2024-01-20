@@ -18,21 +18,27 @@ if __name__ == "__main__":
     recognizer = speech_recognition.Recognizer()
     mic = speech_recognition.Microphone()
 
-    tts.init("Anna", 160)
+    tts.init("Anna", 170)
 
     # while True:
     print('Listening...')
     # voice_input = rec.record_and_recognize(recognizer, mic)
     # print(voice_input)
-    # voice_input = "выключи компьютер через абабаба часа"
+    # voice_input = "выключи компьютер через 2 часа 5 минут"
     # voice_input = "не выключай комп"
     # voice_input = "сколько сейчас время"
-    voice_input = "Привет"
+    # voice_input = "Привет"
+    # voice_input = "телеграм"
+    # voice_input = "значение слова компьютер"
+    # voice_input = "назови случайное число от пятьсот до тысячи"
+    # voice_input = "установи громкость на пятьдесят шестьдесят тринадцать один"
+    voice_input = "установи громкость на сто процентов"
     
     command_class = cr.recognize_command(voice_input)
+    print(command_class)
     voice_output = commands.exec_nessesary_command(command_class, voice_input)
 
-    print(voice_input)
+    print("voice_input: ", voice_input.split())
     print(voice_output)
 
     tts.say(voice_output)

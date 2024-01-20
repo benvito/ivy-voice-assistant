@@ -93,6 +93,7 @@ class ExecCliCommandError(Exception):
     def __repr__(self):
         return self.message
 
+
 class CommandAccessError(Exception):
     def __init__(self, 
                  command_class='', 
@@ -123,3 +124,95 @@ class CommandAccessError(Exception):
     def __repr__(self):
         return self.message
     
+
+class CommandSyntaxInYamlError(Exception):
+    def __init__(self, 
+                 command_class='', 
+                 code=50,
+                 key='',
+                 message='Не хватает нужного параметра в YAML фалйе с командами', 
+                 say_message='Неверное описание команды. Недостает параметров'):
+        self.code = code
+        self.message = message
+        self.say_message = say_message
+        self.command_class = command_class
+        self.key = key
+
+    def say(self):
+        if self.say_message != '':
+            tts.say(self.say_message)
+
+    def log_critical_error(self):
+        logging.critical(f"{self.__class__.__name__} in '{self.command_class}' not exists {self.key}:Error_code={self.code}:{self.message}.")
+
+    def proccess_critical_error(self):
+        self.say()
+        self.log_critical_error()
+
+    def __str__(self):
+        return self.message
+
+    def __repr__(self):
+        return self.message
+
+
+class WikipediaNotFoundError(Exception):
+    def __init__(self, 
+                 command_class='', 
+                 code=100,
+                 search_for='',
+                 message='В Wikipedia нет такой страницы', 
+                 say_message='По вашему запросу ничего не найдено'):
+        self.code = code
+        self.message = message
+        self.say_message = say_message
+        self.command_class = command_class
+        self.search_for = search_for
+
+    def say(self):
+        if self.say_message != '':
+            tts.say(self.say_message)
+
+    def log_warning(self):
+        logging.warning(f"{self.__class__.__name__} in '{self.command_class}' search for {self.search_for}:Error_code={self.code}:{self.message}.")
+
+    def proccess_warning(self):
+        self.say()
+        self.log_warning()
+
+    def __str__(self):
+        return self.message
+
+    def __repr__(self):
+        return self.message
+    
+
+class WikipediaApiError(Exception):
+    def __init__(self, 
+                 command_class='', 
+                 code=110,
+                 search_for='',
+                 message='Ошибка подключения к API Wikipedia', 
+                 say_message='Ошибка подключения к википедии'):
+        self.code = code
+        self.message = message
+        self.say_message = say_message
+        self.command_class = command_class
+        self.search_for = search_for
+
+    def say(self):
+        if self.say_message != '':
+            tts.say(self.say_message)
+
+    def log_warning(self):
+        logging.warning(f"{self.__class__.__name__} in '{self.command_class}' search for {self.search_for}:Error_code={self.code}:{self.message}.")
+
+    def proccess_warning(self):
+        self.say()
+        self.log_warning()
+
+    def __str__(self):
+        return self.message
+
+    def __repr__(self):
+        return self.message
