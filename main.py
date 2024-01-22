@@ -31,8 +31,9 @@ if __name__ == "__main__":
     # voice_input = "телеграм"
     # voice_input = "значение слова компьютер"
     # voice_input = "назови случайное число от пятьсот до тысячи"
-    # voice_input = "установи громкость на пятьдесят шестьдесят тринадцать один"
-    voice_input = "установи громкость на сто процентов"
+    # voice_input = "громкость девяносто пять"
+    # voice_input = "установи громкость на половина"
+    voice_input = "включи звук"
     
     command_class = cr.recognize_command(voice_input)
     print(command_class)

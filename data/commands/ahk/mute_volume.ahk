@@ -1,0 +1,1 @@
+SoundSetMute A_Args[1]

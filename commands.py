@@ -17,6 +17,16 @@ logging.basicConfig(level=logging.INFO, filename='logs/log.log', filemode='w')
 
 commands = dict(yaml.safe_load(open('data/commands/commands.yaml', 'r', encoding='utf-8')))
 
+def all_list_to_str(lst : list) -> list:
+    r"""
+    CONVERT ALL LIST ELEMENTS TO STR
+    EXAMPLE:
+    >>> lst = [1, 2, 3]
+    >>> all_list_to_str(lst)
+    ['1', '2', '3']
+    """
+    return list(map(str, lst))
+
 def unpack_matches(re_arguments : list) -> str:
     r"""
     UNPACK MATCHES FROM RE ARGUMENTS
@@ -37,7 +47,7 @@ def unpack_matches(re_arguments : list) -> str:
             result += match
     return result
 
-def concat_arguments(cmd_arguments : list, re_arguments : list) -> str:
+def concat_arguments(cmd_arguments : list, re_arguments : list, prefix : str, postfix : str) -> str:
     r"""
     CONCAT ARGUMENTS FROM RE ARGUMENTS TO CMD ARGUMENTS
     EXAMPLE:
@@ -49,7 +59,7 @@ def concat_arguments(cmd_arguments : list, re_arguments : list) -> str:
     >>> re_arguments = ['3', '4']
     cmd_arguments = ['1', '2', '3', '4']
     """
-    return cmd_arguments.append(unpack_matches(re_arguments))
+    return cmd_arguments.append(prefix + unpack_matches(re_arguments) + postfix)
 
 def re_arg_to_list(re_arguments : list) -> list:
     r"""
@@ -71,7 +81,7 @@ def re_arg_to_list(re_arguments : list) -> list:
             result.append(match)
     return result
 
-def add_each_re_arg(cmd_arguments : list, re_arguments : list) -> list:
+def add_each_re_arg(cmd_arguments : list, re_arguments : list, prefix : str, postfix : str) -> list:
     r"""
     ADD EACH RE ARGUMENT TO CMD ARGUMENTS
     EXAMPLE:
@@ -86,7 +96,7 @@ def add_each_re_arg(cmd_arguments : list, re_arguments : list) -> list:
     if is_multi_group_match(re_arguments):
         re_arguments = re_arg_to_list(re_arguments)
     for i in range(len(re_arguments)):
-        cmd_arguments.append(re_arguments[i])
+        cmd_arguments.append(prefix + re_arguments[i] + postfix)
     
     return cmd_arguments
 
@@ -112,7 +122,7 @@ def format_each_match_concat(re_arguments : list) -> list:
     
     return new_re_arg
 
-def add_each_match(cmd_arguments : list, re_arguments : list) -> list:
+def add_each_match(cmd_arguments : list, re_arguments : list, prefix : str, postfix : str) -> list:
     r"""
     ADD EACH MATCH FROM RE ARGUMENTS TO CMD ARGUMENTS
     EXAMPLE:
@@ -127,11 +137,11 @@ def add_each_match(cmd_arguments : list, re_arguments : list) -> list:
     new_re_arg = format_each_match_concat(re_arguments)
     
     for i in range(len(new_re_arg)):
-        cmd_arguments.append(new_re_arg[i])
+        cmd_arguments.append(prefix + new_re_arg[i] + postfix)
 
     return cmd_arguments
 
-def pick_first_match_arg(cmd_arguments : list, re_arguments : list) -> list:
+def pick_first_match_arg(cmd_arguments : list, re_arguments : list, prefix : str, postfix : str) -> list:
     r"""
     PICK FIRST MATCH FROM RE ARGUMENTS
     EXAMPLE:
@@ -145,7 +155,7 @@ def pick_first_match_arg(cmd_arguments : list, re_arguments : list) -> list:
     cmd_arguments = ['1', '2', '3']
     """
     re_arguments = format_each_match_concat(re_arguments)
-    cmd_arguments.append(re_arguments[0])
+    cmd_arguments.append(prefix + re_arguments[0] + postfix)
     return cmd_arguments
 
 def recognize_arguments(command: dict, command_class: str, voice_input: str) -> (list, list):
@@ -156,35 +166,41 @@ def recognize_arguments(command: dict, command_class: str, voice_input: str) -> 
                 }
     cmd_arguments = []
     speech_args = []
-    for arg_dict in command[CMD_ARGS]:
-        for arg, re_on in arg_dict.items():
-            if re_on == True:
-                try:
-                    re_arguments = take_arg_from_string(voice_input, arg)
-                except RegexArgumentError as e:
-                    e.command_class = command_class
-                    if command_class != 'random_number':
-                        raise ArgumentError(command_class=command_class, argument=arg) from e  
-                    else:
-                        re_arguments = []     
-                
-                if command[SPEECH_ARGS] == True:
-                    speech_args.append(unpack_matches(re_arguments))
-                
-                if command_class == 'shutdown_timer':
-                    cmd_arguments.append(str(f.convert_to_seconds(re_arguments)))
-                elif command_class == 'wikipedia':
-                    cmd_arguments.append(re_arguments[0][-1])
+    for arg, params in command[CMD_ARGS].items():
+        if params[REGEX_ON] == True:
+            try:
+                re_arguments = take_arg_from_string(voice_input, arg)
+            except RegexArgumentError as e:
+                e.command_class = command_class
+                e.proccess_critical_error()
+                if command_class != 'random_number':
+                    raise ArgumentError(command_class=command_class, argument=arg) from e  
                 else:
-                    cmd_arguments = switch_arg_sep[command[ARGS_SEP]](cmd_arguments, re_arguments)
-                # if command[ARGS_SEP] == ADD_EACH:
-                #     cmd_arguments = add_each_re_arg(cmd_arguments, re_arguments)
-                # elif command[ARGS_SEP] == CONCAT:
-                #     cmd_arguments.append(unpack_matches(re_arguments))
-                # elif command[ARGS_SEP] == PICK_FIRST_MATCH:
-                
+                    re_arguments = []
+            except RegexPatternError as e:
+                e.command_class = command_class
+                e.proccess_critical_error()
+                raise ArgumentError(command_class=command_class, argument=arg) from e
+                  
+            arg = re_arguments
+            if command[SPEECH_ARGS] == True:
+                speech_args.append(unpack_matches(arg))
+            
+            if command_class == 'shutdown_timer':
+                cmd_arguments.append(params[PREFIX] + str(f.convert_to_seconds(arg)) + params[POSTFIX])
+            elif command_class == 'wikipedia':
+                cmd_arguments.append(params[PREFIX] + arg[0][-1] + params[POSTFIX])
             else:
-                cmd_arguments.append(arg)
+                cmd_arguments = switch_arg_sep[command[ARGS_SEP]](cmd_arguments, arg, params[PREFIX], params[POSTFIX])
+            # if command[ARGS_SEP] == ADD_EACH:
+            #     cmd_arguments = add_each_re_arg(cmd_arguments, re_arguments)
+            # elif command[ARGS_SEP] == CONCAT:
+            #     cmd_arguments.append(unpack_matches(re_arguments))
+            # elif command[ARGS_SEP] == PICK_FIRST_MATCH:
+            
+        else:
+            arg = params[PREFIX] + str(arg) + params[POSTFIX]
+            cmd_arguments.append(arg)
     
     return cmd_arguments, speech_args
 
@@ -227,7 +243,10 @@ def take_arg_from_string(voice_input : str, arg : str):
     nums_voice_input = f.word_to_num_in_string(voice_input)
     regex = arg
 
-    pattern = re.compile(regex)
+    try:
+        pattern = re.compile(regex)
+    except TypeError:
+        raise RegexPatternError(argument=arg)
 
     match = pattern.findall(nums_voice_input)
 
@@ -330,23 +349,39 @@ def wikipedia_command_proccessing(command : dict, command_class : str, voice_inp
 def fix_command_params(command : dict, command_class : str) -> dict:
     try:
         a = command[CMD_ARGS]
-    except KeyError:
+    except:
         command[CMD_ARGS] = []
 
     try:
         a = command[ARGS_SEP]
-    except KeyError:
+    except:
         command[ARGS_SEP] = CONCAT
 
     try:
         a = command[SPEECH_ARGS]
-    except KeyError:
+    except:
         command[SPEECH_ARGS] = False
     
     try:
         a = command[SPEECH_OUTPUT]
-    except KeyError:
+    except:
         command[SPEECH_OUTPUT] = False
+
+    for arg, params in command[CMD_ARGS].items():
+        if type(params) != dict:
+            command[CMD_ARGS][arg] = dict()
+        try:
+            a = params[REGEX_ON]
+        except:
+            command[CMD_ARGS][arg][REGEX_ON] = False
+        try:
+            a = params[PREFIX]
+        except:
+            command[CMD_ARGS][arg][PREFIX] = ''
+        try:
+            a = params[POSTFIX]
+        except:
+            command[CMD_ARGS][arg][POSTFIX] = ''
 
     try:
         a = command[SPEECH_TYPE]
@@ -357,7 +392,7 @@ def fix_command_params(command : dict, command_class : str) -> dict:
             a = command[CMD_COMMAND]
         elif command[COMMAND_TYPE] == OPEN_LINK:
             a = command[LINK]
-    except KeyError as e:
+    except Exception as e:
         raise CommandSyntaxInYamlError(command_class=command_class,
                                        key=e)
 
@@ -395,14 +430,17 @@ def random_command_proccessing(command : dict, command_class : str, voice_input 
 
 def ahk_command_proccessing(command : dict, command_class : str, voice_input : str) -> str:
     output = ''
-    arguments, speech_args = recognize_arguments(command, command_class, voice_input)
-    print(arguments)
-    ahk_path = os.path.normpath(command[AHK_PATH])
-    print(ahk_path)
-    cmd_output = subprocess.call([ahk_path, "".join(arguments)])
-    output = create_speech_output(speech_type=command[SPEECH_TYPE],
-                                  speech_list=command[SPEECH_LIST],
-                                  command_class=command_class)
+    try:
+        arguments, speech_args = recognize_arguments(command, command_class, voice_input)
+        print("ARGUMENTS: ", arguments)
+        ahk_path = os.path.normpath(command[AHK_PATH])
+        cmd_output = subprocess.call([ahk_path, "".join(arguments)])
+        output = create_speech_output(speech_type=command[SPEECH_TYPE],
+                                    speech_list=command[SPEECH_LIST],
+                                    command_class=command_class)
+    except ArgumentError as e:
+        e.proccess_critical_error()
+        output = None
     return output
 
 def exec_nessesary_command(command_class : str, voice_input : str) -> str:

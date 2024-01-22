@@ -14,6 +14,10 @@ TODO:
     - static speech
     - time_format_for_string занимает очень много времени
     - обязательность аргумента regex
+    -   necessary_phrases:
+            *half
+        exclude_phrases:
+            *int (или че то такое, значит любое число)
 IDEAS FOR UPGRADE:
     - Открой ютуб, аргументы: ютуб(в виде регекса)=http::/youtube.com
     - phrases:

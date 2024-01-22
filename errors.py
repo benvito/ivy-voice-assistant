@@ -30,6 +30,36 @@ class RegexArgumentError(Exception):
 
     def __repr__(self):
         return self.message
+    
+class RegexPatternError(Exception):
+    def __init__(self, 
+                 command_class='', 
+                 code=12,  
+                 argument='', 
+                 message="Кажется, вы неверно указали регулярное выражение. Пожалуйста, проверяйте правильность регулярного выражения на стронних ресурсах", 
+                 say_message='Неверное регулярное выражение'):
+        self.code = code
+        self.message = message
+        self.say_message = say_message
+        self.command_class = command_class
+        self.argument = argument
+
+    def say(self):
+        if self.say_message != '':
+            tts.say(self.say_message)
+
+    def log_critical_error(self):
+        logging.critical(f"{self.__class__.__name__} in '{self.command_class}':Error_code={self.code}:{self.argument}:{self.message}.")
+
+    def proccess_critical_error(self):
+        self.say()
+        self.log_critical_error()
+
+    def __str__(self):
+        return self.message
+
+    def __repr__(self):
+        return self.message
 
 class ArgumentError(Exception):
     def __init__(self, 

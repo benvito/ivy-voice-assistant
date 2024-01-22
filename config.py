@@ -24,7 +24,9 @@ CONCAT = "concat"
 AHK = "ahk"
 AHK_PATH = "ahk_path"
 PICK_FIRST_MATCH = "pick_first_match"
-
+REGEX_ON = "regex_on"
+PREFIX = "prefix"
+POSTFIX = "postfix"
 
 ERROR = "error"
 ERROR_CODE = "error_code"
