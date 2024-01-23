@@ -34,7 +34,7 @@ if __name__ == "__main__":
     # voice_input = "громкость девяносто пять"
     # voice_input = "установи громкость на половина"
     # voice_input = "включи звук"
-    voice_input = "подкинь монетку"
+    voice_input = "пожалуйста умоляю подскажи время"
     
     command_class = cr.recognize_command(voice_input)
     print(command_class)

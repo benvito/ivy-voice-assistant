@@ -122,7 +122,7 @@ open_telegram: # non-system
 # -------------------------
 # ahk Commands :
 # -------------------------
-volume_set:
+volume/set:
   phrases:
     - установи громкость на
     - установить громкость на
@@ -148,7 +148,7 @@ volume_set:
     - Выполнено
     - Как скажешь
 
-volume_set_half:
+volume/set_half:
   phrases:
     - установи громкость на половину
     - установить громкость на половину
@@ -171,7 +171,7 @@ volume_set_half:
     - Выполнено
     - Как скажешь
 
-volume_mute:
+volume/mute:
   phrases:
     - выключи звук
     - отключи звук
@@ -192,7 +192,7 @@ volume_mute:
     - Выполнено
     - Звук на компьютере выключен
 
-volume_unmute:
+volume/unmute:
   phrases:
     - включи звук
     - верни звук
@@ -209,7 +209,7 @@ volume_unmute:
   speech_list:
     - Звук на компьютере включен
 
-volume_increase:
+volume/increase:
   phrases:
     - увеличь громкость
     - прибавь громкость
@@ -231,7 +231,7 @@ volume_increase:
   speech_type: dynamic
   speech_list:
 
-volume_decrease:
+volume/decrease:
   phrases:
     - уменьши громкость
     - убавь громкость

@@ -1,0 +1,25 @@
+browser/open_youtube: # non-system
+  phrases:
+    - открои? ютуб
+    - включи ютуб
+    - открой в браузере ютуб
+    - запусти ютуб
+    - ютуб
+  command_type: openLink
+  link: https://www.youtube.com/
+  speech_type: dynamic
+  speech_list:
+    - Ютуб открыт
+
+browser/open_telegram: # non-system
+  phrases:
+    - открои? телеграм
+    - включи телеграм
+    - открой в браузере телеграм
+    - запусти телеграм
+    - телеграм
+  command_type: openLink
+  link: https://web.telegram.org/
+  speech_type: dynamic
+  speech_list:
+    - Телеграам открыт

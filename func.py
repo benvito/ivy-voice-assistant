@@ -5,11 +5,38 @@ from ru_word2number import w2n
 from text_to_num import alpha2digit
 import time
 import re
+import os
+import yaml
 
 from config import *
 from decorators import exec_timer
 
 WORD_MATCH_RATIO = 80
+
+@exec_timer
+def path_to_command(command_class : str) -> str:
+    command_folder = command_class.split('/')[0]
+    return os.path.join('.', 'data', 'commands', command_folder)
+
+@exec_timer
+def load_command_data(command_class : str) -> dict:
+    command_folder = command_class.split('/')[0]
+    yaml_path = os.path.join('.', 'data', 'commands', command_folder, 'commands.yaml')
+    command_data = dict(yaml.safe_load(open(yaml_path, 'r', encoding='utf-8')))
+    return command_data
+
+@exec_timer
+def load_all_commands_dict() -> dict:
+    commands = dict()
+    for dirName, subdirList, fileList in os.walk(".\\data\\commands\\"):
+        if "commands.yaml" in fileList:
+            commands.update(dict(yaml.safe_load(open(os.path.join(dirName, 'commands.yaml'), 'r', encoding='utf-8'))))
+    return commands
+
+@exec_timer
+def load_all_commands_classes() -> list:
+    commands = load_all_commands_dict()
+    return commands.keys()
 
 @exec_timer
 def remove_brackets(text):

@@ -27,6 +27,7 @@ PICK_FIRST_MATCH = "pick_first_match"
 REGEX_ON = "regex_on"
 PREFIX = "prefix"
 POSTFIX = "postfix"
+COMMAND_FOLDER = "command_folder"
 
 ERROR = "error"
 ERROR_CODE = "error_code"

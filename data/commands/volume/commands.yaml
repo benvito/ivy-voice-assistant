@@ -1,0 +1,137 @@
+---
+volume/set:
+  phrases:
+    - установи громкость на
+    - установить громкость на
+    - поставь громкость на
+    - громкость на
+    - громкость
+  exclude_phrases: &half
+    - половину
+    - половина
+    - половинку
+    - половинка
+  command_type: ahk
+  ahk_path: ahk/set_volume.exe
+  cmd_args:
+    (\d+): 
+      regex_on: true
+  args_sep: pick_first_match
+  speech_output: false
+  speech_type: dynamic
+  speech_list:
+    - Громкость установлена
+    - Сделано
+    - Выполнено
+    - Как скажешь
+
+volume/set_half:
+  phrases:
+    - установи громкость на половину
+    - установить громкость на половину
+    - поставь громкость на половину
+    - громкость на половину
+    - половина громкости
+    - половину громкости
+    - громкость половина
+  necessary_phrases:
+    *half
+  command_type: ahk
+  ahk_path: ahk/set_volume.exe
+  cmd_args:
+    50:
+  speech_output: false
+  speech_type: dynamic
+  speech_list:
+    - Громкость установлена
+    - Сделано
+    - Выполнено
+    - Как скажешь
+
+volume/mute:
+  phrases:
+    - выключи звук
+    - отключи звук
+    - беззвучный режим
+    - без звука
+  exclude_phrases:
+    - включи
+    - включить
+  command_type: ahk
+  ahk_path: ahk/mute_volume.exe
+  cmd_args:
+    1:
+  speech_output: false
+  speech_type: dynamic
+  speech_list:
+    - Громкость выключена
+    - Сделано
+    - Выполнено
+    - Звук на компьютере выключен
+
+volume/unmute:
+  phrases:
+    - включи звук
+    - верни звук
+    - режим со звуком
+  exclude_phrases:
+    - выключи
+    - выключить
+  command_type: ahk
+  ahk_path: ahk/mute_volume.exe
+  cmd_args:
+    0:
+  speech_output: false
+  speech_type: dynamic
+  speech_list:
+    - Звук на компьютере включен
+
+volume/increase:
+  phrases:
+    - увеличь громкость
+    - увеличить громкость
+    - прибавь громкость
+    - добавь громкости
+    - сделай погромче
+    - погромче
+  exclude_phrases:
+    - тише
+    - уменьши
+    - потише
+    - включи
+    - выключи
+  command_type: ahk
+  ahk_path: ahk/set_volume.exe
+  cmd_args:
+    20:
+      prefix: '+'
+  speech_output: false
+  speech_type: dynamic
+  speech_list:
+
+volume/decrease:
+  phrases:
+    - уменьши громкость
+    - убавь громкость
+    - отбавь громкости
+    - сделай потише
+    - громкость потише
+    - громкость поменьше
+    - тише
+    - потише
+    - звук потише
+    - звук тише
+  exclude_phrases:
+    - увеличь
+    - прибавь
+    - погромче
+    - включи
+    - выключи
+  command_type: ahk
+  ahk_path: ahk/set_volume.exe
+  cmd_args:
+    20:
+      prefix: '-'
+  speech_output: false
+  speech_type: dynamic
+  speech_list:

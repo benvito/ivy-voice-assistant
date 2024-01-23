@@ -1,2 +1,6 @@
 INFO:comtypes.client._code_cache:Imported existing <module 'comtypes.gen' from 'd:\\ProjectsProgramming\\Ivy\\venv\\lib\\site-packages\\comtypes\\gen\\__init__.py'>
 INFO:comtypes.client._code_cache:Using writeable comtypes cache directory: 'd:\ProjectsProgramming\Ivy\venv\lib\site-packages\comtypes\gen'
+INFO:pymorphy2.opencorpora_dict.wrapper:Loading dictionaries from d:\ProjectsProgramming\Ivy\venv\lib\site-packages\pymorphy2_dicts_ru\data
+INFO:pymorphy2.opencorpora_dict.wrapper:format: 2.4, revision: 417127, updated: 2020-10-11T15:05:51.070345
+INFO:pymorphy2.opencorpora_dict.wrapper:Loading dictionaries from d:\ProjectsProgramming\Ivy\venv\lib\site-packages\pymorphy2_dicts_ru\data
+INFO:pymorphy2.opencorpora_dict.wrapper:format: 2.4, revision: 417127, updated: 2020-10-11T15:05:51.070345

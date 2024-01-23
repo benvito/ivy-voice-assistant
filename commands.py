@@ -7,6 +7,7 @@ import re
 import logging
 import webbrowser
 import wikipediaapi
+from pprint import pprint
 
 from config import *
 import tts
@@ -15,7 +16,7 @@ import func as f
 
 logging.basicConfig(level=logging.INFO, filename='logs/log.log', filemode='w')
 
-commands = dict(yaml.safe_load(open('data/commands/commands.yaml', 'r', encoding='utf-8')))
+# commands = dict(yaml.safe_load(open('data/commands/commands.yaml', 'r', encoding='utf-8')))
 
 def all_list_to_str(lst : list) -> list:
     r"""
@@ -347,6 +348,7 @@ def wikipedia_command_proccessing(command : dict, command_class : str, voice_inp
     return output    
 
 def fix_command_params(command : dict, command_class : str) -> dict:
+    command[COMMAND_FOLDER] = f.path_to_command(command_class)
     try:
         a = command[CMD_ARGS]
     except:
@@ -433,7 +435,7 @@ def ahk_command_proccessing(command : dict, command_class : str, voice_input : s
     try:
         arguments, speech_args = recognize_arguments(command, command_class, voice_input)
         print("ARGUMENTS: ", arguments)
-        ahk_path = os.path.normpath(command[AHK_PATH])
+        ahk_path = os.path.join(command[COMMAND_FOLDER], os.path.normpath(command[AHK_PATH]))
         cmd_output = subprocess.call([ahk_path, "".join(arguments)])
         output = create_speech_output(speech_type=command[SPEECH_TYPE],
                                     speech_list=command[SPEECH_LIST],
@@ -446,8 +448,8 @@ def ahk_command_proccessing(command : dict, command_class : str, voice_input : s
 def exec_nessesary_command(command_class : str, voice_input : str) -> str:
     output = ''
     try:
-        command = commands[command_class]
-
+        # command = f.load_command_data(command_class)
+        command = f.load_command_data(command_class)[command_class]
         command = fix_command_params(command, command_class)
 
         if command[COMMAND_TYPE] == CMD:

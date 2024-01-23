@@ -8,6 +8,7 @@ from sklearn.metrics import accuracy_score
 import joblib
 import numpy as np
 from decorators import exec_timer
+import func as f
 
 def execute_commands_for_learning(commands : dict):
     learning_commands = {}
@@ -19,7 +20,7 @@ def execute_commands_for_learning(commands : dict):
 
 @exec_timer
 def train_model():
-    commands = dict(yaml.safe_load(open('data/commands/commands.yaml', 'r', encoding='utf-8')))
+    commands = f.load_all_commands_dict()
 
     learning_commands = execute_commands_for_learning(commands)
     
@@ -76,7 +77,7 @@ def test_model(text):
         print(f"{class_} - {prob}")
 
 train_model()
-test_model("сколько сейчас время")
+test_model("мне кажется ты тупая и не знаешь когда нужно выключить комп")
 
 
 @exec_timer
@@ -87,7 +88,7 @@ def recognize_command(text : str) -> str or None:
     model = joblib.load("models/command_detection/commands_detection.joblib")
     vectorizer = joblib.load("models/command_detection/commands_vectorizer.joblib")
 
-    commands = dict(yaml.safe_load(open('data/commands/commands.yaml', 'r', encoding='utf-8')))
+    commands = f.load_all_commands_dict()
 
     text_vector = vectorizer.transform([text]).toarray()[0]
     answer = model.predict_proba([text_vector])[0]
