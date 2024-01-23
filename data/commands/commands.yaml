@@ -48,9 +48,10 @@ shutdown_timer: # semi-system
   command_type: cmd
   cmd_command: shutdown
   cmd_args: 
-    - /s : false
-    - /t : false
-    - \b(\d+)\s+(час\w*|минут\w*|секунд\w*) : true
+    /s:
+    /t:
+    \b(\d+)\s+(час\w*|минут\w*|секунд\w*):
+      regex_on : true
   speech_output: false
   speech_args: true
   speech_type: dynamic
@@ -77,7 +78,7 @@ shutdown_off: # non-system
   command_type: cmd
   cmd_command: shutdown
   cmd_args: 
-    - /a : false
+    /a:
   speech_output: false
   speech_args: true
   speech_type: dynamic
@@ -208,6 +209,56 @@ volume_unmute:
   speech_list:
     - Звук на компьютере включен
 
+volume_increase:
+  phrases:
+    - увеличь громкость
+    - прибавь громкость
+    - добавь громкости
+    - сделай погромче
+    - погромче
+  exclude_phrases:
+    - тише
+    - уменьши
+    - потише
+    - включи
+    - выключи
+  command_type: ahk
+  ahk_path: data/commands/ahk/set_volume.exe
+  cmd_args:
+    20:
+      prefix: '+'
+  speech_output: false
+  speech_type: dynamic
+  speech_list:
+
+volume_decrease:
+  phrases:
+    - уменьши громкость
+    - убавь громкость
+    - отбавь громкости
+    - сделай потише
+    - громкость потише
+    - громкость поменьше
+    - тише
+    - потише
+    - звук потише
+    - звук тише
+  exclude_phrases:
+    - увеличь
+    - прибавь
+    - погромче
+    - включи
+    - выключи
+  command_type: ahk
+  ahk_path: data/commands/ahk/set_volume.exe
+  cmd_args:
+    20:
+      prefix: '-'
+  speech_output: false
+  speech_type: dynamic
+  speech_list:
+  
+
 # -------------------------
 # wikipedia Commands :
 # -------------------------
@@ -269,6 +320,12 @@ greetings: # non-system
     - ку
     - сколько лет, сколько зим 
     - столько времени тебя не видел
+  exclude_phrases:
+    - сделай
+    - скажи
+    - покажи
+    - расскажи
+    - что значит
   command_type: dialog
   speech_type: dynamic
   speech_list:

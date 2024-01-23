@@ -350,7 +350,7 @@ def fix_command_params(command : dict, command_class : str) -> dict:
     try:
         a = command[CMD_ARGS]
     except:
-        command[CMD_ARGS] = []
+        command[CMD_ARGS] = dict()
 
     try:
         a = command[ARGS_SEP]

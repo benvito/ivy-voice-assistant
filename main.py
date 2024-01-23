@@ -33,7 +33,8 @@ if __name__ == "__main__":
     # voice_input = "назови случайное число от пятьсот до тысячи"
     # voice_input = "громкость девяносто пять"
     # voice_input = "установи громкость на половина"
-    voice_input = "включи звук"
+    # voice_input = "включи звук"
+    voice_input = "подкинь монетку"
     
     command_class = cr.recognize_command(voice_input)
     print(command_class)

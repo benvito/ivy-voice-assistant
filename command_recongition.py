@@ -2,6 +2,7 @@ import time
 import yaml
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import RandomForestClassifier
 from sklearn import svm
 from sklearn.metrics import accuracy_score
 import joblib
@@ -16,6 +17,7 @@ def execute_commands_for_learning(commands : dict):
 
     return learning_commands
 
+@exec_timer
 def train_model():
     commands = dict(yaml.safe_load(open('data/commands/commands.yaml', 'r', encoding='utf-8')))
 
@@ -26,7 +28,7 @@ def train_model():
     vectorizer = CountVectorizer()
     vectors = vectorizer.fit_transform(list(learning_commands.keys()))
 
-    model = LogisticRegression()
+    model = RandomForestClassifier()
     model.fit(vectors, list(learning_commands.values()))
     # model = svm.SVC(probability=True)
     # model.fit(vectors, list(learning_commands.values()))
@@ -38,7 +40,7 @@ def train_model():
     del learning_commands
     del commands
 
-
+@exec_timer
 def test_model(text):
     '''
     TESTING MODEL
@@ -64,12 +66,17 @@ def test_model(text):
 
     classes = model.classes_
     probabilities = answer
+
+    sorted_indices = np.argsort(-np.array(probabilities))
+
+    top_classes = classes[sorted_indices[:]]
+    top_probabilities = probabilities[sorted_indices[:]]
     print(text)
-    for class_, prob in zip(classes, probabilities):
+    for class_, prob in zip(top_classes, top_probabilities):
         print(f"{class_} - {prob}")
 
-# train_model()
-test_model("включи звук")
+train_model()
+test_model("сколько сейчас время")
 
 
 @exec_timer
