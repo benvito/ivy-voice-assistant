@@ -30,11 +30,12 @@ if __name__ == "__main__":
     # voice_input = "Привет"
     # voice_input = "телеграм"
     # voice_input = "значение слова компьютер"
-    # voice_input = "назови случайное число от пятьсот до тысячи"
+    # voice_input = "назови случайное число от пятьсот до пятьсот один"
     # voice_input = "громкость девяносто пять"
-    # voice_input = "установи громкость на половина"
+    # voice_input = "установи громкость на половину"
     # voice_input = "включи звук"
-    voice_input = "пожалуйста умоляю подскажи время"
+    # voice_input = "пожалуйста умоляю подскажи время"
+    voice_input = "отключи от звонка в дискорде"
     
     command_class = cr.recognize_command(voice_input)
     print(command_class)

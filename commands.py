@@ -13,6 +13,7 @@ from config import *
 import tts
 from errors import *
 import func as f
+import img_macro as imarco
 
 logging.basicConfig(level=logging.INFO, filename='logs/log.log', filemode='w')
 
@@ -42,7 +43,7 @@ def unpack_matches(re_arguments : list) -> str:
     if is_multi_group_match(re_arguments):
         for match in re_arguments:
             for m in match:
-                result += m
+                result += m + ' '
     else:
         for match in re_arguments:
             result += match
@@ -60,7 +61,8 @@ def concat_arguments(cmd_arguments : list, re_arguments : list, prefix : str, po
     >>> re_arguments = ['3', '4']
     cmd_arguments = ['1', '2', '3', '4']
     """
-    return cmd_arguments.append(prefix + unpack_matches(re_arguments) + postfix)
+    cmd_arguments.append(prefix + unpack_matches(re_arguments) + postfix)
+    return cmd_arguments
 
 def re_arg_to_list(re_arguments : list) -> list:
     r"""
@@ -174,7 +176,7 @@ def recognize_arguments(command: dict, command_class: str, voice_input: str) -> 
             except RegexArgumentError as e:
                 e.command_class = command_class
                 e.proccess_critical_error()
-                if command_class != 'random_number':
+                if command_class != 'random/number':
                     raise ArgumentError(command_class=command_class, argument=arg) from e  
                 else:
                     re_arguments = []
@@ -187,12 +189,13 @@ def recognize_arguments(command: dict, command_class: str, voice_input: str) -> 
             if command[SPEECH_ARGS] == True:
                 speech_args.append(unpack_matches(arg))
             
-            if command_class == 'shutdown_timer':
+            if command_class == 'shutdown/timer':
                 cmd_arguments.append(params[PREFIX] + str(f.convert_to_seconds(arg)) + params[POSTFIX])
             elif command_class == 'wikipedia':
                 cmd_arguments.append(params[PREFIX] + arg[0][-1] + params[POSTFIX])
             else:
                 cmd_arguments = switch_arg_sep[command[ARGS_SEP]](cmd_arguments, arg, params[PREFIX], params[POSTFIX])
+
             # if command[ARGS_SEP] == ADD_EACH:
             #     cmd_arguments = add_each_re_arg(cmd_arguments, re_arguments)
             # elif command[ARGS_SEP] == CONCAT:
@@ -202,7 +205,7 @@ def recognize_arguments(command: dict, command_class: str, voice_input: str) -> 
         else:
             arg = params[PREFIX] + str(arg) + params[POSTFIX]
             cmd_arguments.append(arg)
-    
+
     return cmd_arguments, speech_args
 
 def concat_cmd_command_and_arguments(cmd_command : str, cmd_arguments : list) -> str:
@@ -394,6 +397,12 @@ def fix_command_params(command : dict, command_class : str) -> dict:
             a = command[CMD_COMMAND]
         elif command[COMMAND_TYPE] == OPEN_LINK:
             a = command[LINK]
+        elif command[COMMAND_TYPE] == AHK:
+            a = command[AHK_PATH]
+        elif command[COMMAND_TYPE] == WIKIPEDIA:
+            a = command[CMD_ARGS]
+        elif command[COMMAND_TYPE] == IMG_MACRO:
+            a = command[IMG_MACRO]
     except Exception as e:
         raise CommandSyntaxInYamlError(command_class=command_class,
                                        key=e)
@@ -445,6 +454,19 @@ def ahk_command_proccessing(command : dict, command_class : str, voice_input : s
         output = None
     return output
 
+def img_macro_command_proccessing(command : dict, command_class : str, voice_input : str) -> str:
+    output = ''
+
+    marco = command[IMG_MACRO]
+
+    imarco.execute_macro(marco)
+
+    output = create_speech_output(speech_type=command[SPEECH_TYPE],
+                                  speech_list=command[SPEECH_LIST],
+                                  command_class=command_class)
+
+    return output
+
 def exec_nessesary_command(command_class : str, voice_input : str) -> str:
     output = ''
     try:
@@ -464,6 +486,8 @@ def exec_nessesary_command(command_class : str, voice_input : str) -> str:
             output = random_command_proccessing(command, command_class, voice_input)
         elif command[COMMAND_TYPE] == AHK:
             output = ahk_command_proccessing(command, command_class, voice_input)
+        elif command[COMMAND_TYPE] == IMG_MACRO:
+            output = img_macro_command_proccessing(command, command_class, voice_input)
         output = f.num_to_word_in_string(output)
     except KeyError as e:
         try:

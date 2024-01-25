@@ -1,12 +1,12 @@
-from pymorphy2 import MorphAnalyzer
+from pymorphy3 import MorphAnalyzer
 from fuzzywuzzy import fuzz
 from num2words import num2words
-from ru_word2number import w2n
 from text_to_num import alpha2digit
 import time
 import re
 import os
 import yaml
+from functools import lru_cache
 
 from config import *
 from decorators import exec_timer
@@ -231,11 +231,14 @@ def query_to_list(query):
     query = query.lower()
     return query.split(' ')
 
+@exec_timer
 def determ_query(query):
     for i in range(len(query)):
         query[i] = determ_word(query[i])
     return query
 
+
+# @lru_cache(maxsize=128)
 def determ_word(word):
     m = MorphAnalyzer()
     

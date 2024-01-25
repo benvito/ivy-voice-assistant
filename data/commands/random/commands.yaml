@@ -8,7 +8,8 @@ random/random_number: # semi-system
     - назови случайное число в диапозоне
   command_type: random
   cmd_args:
-    - (\d+) : true
+    (\d+):
+      regex_on: true
   args_sep : add_each
   speech_output: true
   speech_type: dynamic

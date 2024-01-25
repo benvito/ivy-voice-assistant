@@ -29,5 +29,17 @@ PREFIX = "prefix"
 POSTFIX = "postfix"
 COMMAND_FOLDER = "command_folder"
 
+### MACROS ###
+IMG_MACRO = "img_macro"
+
+IMG = "img"
+POSITION = "position"
+
+DEFINE = "define"
+WAIT = "wait"
+AIM = "aim"
+CLICK = "click"
+
+### ERROR CODES ###
 ERROR = "error"
 ERROR_CODE = "error_code"
