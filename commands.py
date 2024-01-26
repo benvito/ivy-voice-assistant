@@ -459,7 +459,7 @@ def img_macro_command_proccessing(command : dict, command_class : str, voice_inp
 
     marco = command[IMG_MACRO]
 
-    imarco.execute_macro(marco)
+    imarco.execute_macro(marco, f.path_to_command(command_class))
 
     output = create_speech_output(speech_type=command[SPEECH_TYPE],
                                   speech_list=command[SPEECH_LIST],

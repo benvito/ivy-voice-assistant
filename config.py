@@ -34,6 +34,11 @@ IMG_MACRO = "img_macro"
 
 IMG = "img"
 POSITION = "position"
+SIZE = "size"
+X = 0
+Y = 1
+
+CENTER = "center"
 
 DEFINE = "define"
 WAIT = "wait"

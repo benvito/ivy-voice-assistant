@@ -9,9 +9,9 @@ img_macros/discord_leave_call:
   command_type: img_macro
   img_macro: 
     - define: [img/discord_leave_call/leave1.jpg, img/discord_leave_call/leave2.jpg]
-    - wait: 100
+    - wait: 0.1
     - aim: center
-    - wait: 200
+    - wait: 0.1
     - click: 1
   speech_type: dynamic
   speech_list:
