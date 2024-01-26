@@ -352,6 +352,26 @@ def wikipedia_command_proccessing(command : dict, command_class : str, voice_inp
 
 def fix_command_params(command : dict, command_class : str) -> dict:
     command[COMMAND_FOLDER] = f.path_to_command(command_class)
+
+    try:
+        a = command[SPEECH_TYPE]
+        a = command[SPEECH_LIST]
+        a = command[COMMAND_TYPE]
+        a = command[PHRASES]
+        if command[COMMAND_TYPE] == CMD:
+            a = command[CMD_COMMAND]
+        elif command[COMMAND_TYPE] == OPEN_LINK:
+            a = command[LINK]
+        elif command[COMMAND_TYPE] == AHK:
+            a = command[AHK_PATH]
+        elif command[COMMAND_TYPE] == WIKIPEDIA:
+            a = command[CMD_ARGS]
+        elif command[COMMAND_TYPE] == IMG_MACRO:
+            a = command[IMG_MACRO]
+    except Exception as e:
+        raise CommandSyntaxInYamlError(command_class=command_class,
+                                       key=e)
+    
     try:
         a = command[CMD_ARGS]
     except:
@@ -372,6 +392,13 @@ def fix_command_params(command : dict, command_class : str) -> dict:
     except:
         command[SPEECH_OUTPUT] = False
 
+    try:
+        if command[COMMAND_TYPE] == IMG_MACRO:
+            a = command[CHECK_ALL_SCREENS]
+    except:
+        command[CHECK_ALL_SCREENS] = True
+
+
     for arg, params in command[CMD_ARGS].items():
         if type(params) != dict:
             command[CMD_ARGS][arg] = dict()
@@ -388,24 +415,6 @@ def fix_command_params(command : dict, command_class : str) -> dict:
         except:
             command[CMD_ARGS][arg][POSTFIX] = ''
 
-    try:
-        a = command[SPEECH_TYPE]
-        a = command[SPEECH_LIST]
-        a = command[COMMAND_TYPE]
-        a = command[PHRASES]
-        if command[COMMAND_TYPE] == CMD:
-            a = command[CMD_COMMAND]
-        elif command[COMMAND_TYPE] == OPEN_LINK:
-            a = command[LINK]
-        elif command[COMMAND_TYPE] == AHK:
-            a = command[AHK_PATH]
-        elif command[COMMAND_TYPE] == WIKIPEDIA:
-            a = command[CMD_ARGS]
-        elif command[COMMAND_TYPE] == IMG_MACRO:
-            a = command[IMG_MACRO]
-    except Exception as e:
-        raise CommandSyntaxInYamlError(command_class=command_class,
-                                       key=e)
 
     return command
 
@@ -459,7 +468,7 @@ def img_macro_command_proccessing(command : dict, command_class : str, voice_inp
 
     marco = command[IMG_MACRO]
 
-    imarco.execute_macro(marco, f.path_to_command(command_class))
+    imarco.execute_macro(marco, f.path_to_command(command_class), command[CHECK_ALL_SCREENS])
 
     output = create_speech_output(speech_type=command[SPEECH_TYPE],
                                   speech_list=command[SPEECH_LIST],

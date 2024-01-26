@@ -16,7 +16,7 @@ def read_command(command : dict) -> (str, any):
 def parse_macro(macro : list):
     pass
     
-def execute_macro(macro : list, path_to_command : str):
+def execute_macro(macro : list, path_to_command : str, check_all_screens : bool = False):
     current_img_data = {
         IMG : '',
         POSITION : (None, None),
@@ -29,7 +29,7 @@ def execute_macro(macro : list, path_to_command : str):
     for command in macro:
         command, value = read_command(command)
         if command == DEFINE:
-            current_img_data = img_define(current_img_data, value, path_to_command)
+            current_img_data = img_define(current_img_data, value, path_to_command, check_all_screens)
         elif command == WAIT:
             macro_wait(value)
         else:
@@ -61,12 +61,16 @@ def get_img_size(image : str) -> (int, int):
     w, h = cv2.imread(image).shape[::-1][:2]
     return w, h
 
-def get_img_pos(image : str):
-    with mss.mss() as sct:
-        monitors = sct.monitors
-        all_monitors_screen = sct.grab(monitors[0])
-        screen_img = np.array(all_monitors_screen)
-    screenshot = cv2.cvtColor(np.array(screen_img), cv2.COLOR_RGB2GRAY)
+def get_img_pos(image : str, check_all_screens : bool) -> (int, int, int, int):
+    if check_all_screens:
+        with mss.mss() as sct:
+            monitors = sct.monitors
+            all_monitors_screen = sct.grab(monitors[0])
+            screen_img = np.array(all_monitors_screen)
+    else:
+        screen_img = np.array(pyautogui.screenshot())
+        
+    screenshot = cv2.cvtColor(screen_img, cv2.COLOR_RGB2GRAY)
     template = cv2.imread(image, cv2.IMREAD_GRAYSCALE)
     w, h = template.shape[::-1][:2]
     result_match = cv2.matchTemplate(screenshot, template, cv2.TM_CCOEFF_NORMED)
@@ -78,13 +82,13 @@ def get_img_pos(image : str):
         return x, y, w, h
     return None, None, None, None
 
-def img_define(current_img_data : dict, image : str or list, path_to_command : str) -> dict:
+def img_define(current_img_data : dict, image : str or list, path_to_command : str, check_all_screens : bool) -> dict:
     cur_img = None
     w, h = None, None
     if type(image) != list:
         image = [image]
     for img in image:
-        img_x, img_y, w, h = get_img_pos(os.path.join(os.path.normpath(path_to_command), os.path.normpath(img)))
+        img_x, img_y, w, h = get_img_pos(os.path.join(os.path.normpath(path_to_command), os.path.normpath(img)), check_all_screens)
         if img_x != None or img_y != None:
             cur_img = img
             break

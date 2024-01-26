@@ -31,6 +31,7 @@ COMMAND_FOLDER = "command_folder"
 
 ### MACROS ###
 IMG_MACRO = "img_macro"
+CHECK_ALL_SCREENS = "check_all_screens"
 
 IMG = "img"
 POSITION = "position"

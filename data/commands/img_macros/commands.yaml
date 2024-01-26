@@ -7,6 +7,7 @@ img_macros/discord_leave_call:
     - заверши звонок в дискорде
     - положи трубку в дискорде
   command_type: img_macro
+  check_all_screens: true
   img_macro: 
     - define: [img/discord_leave_call/leave1.jpg, img/discord_leave_call/leave2.jpg]
     - wait: 0.1
