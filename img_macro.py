@@ -4,8 +4,9 @@ import pyautogui
 import numpy as np
 import os
 import mss
+import threading
 
-from config import IMG_MACRO,IMG,POSITION,DEFINE,WAIT,AIM,CLICK,SIZE,CENTER,X,Y
+from config import IMG_MACRO,IMG,POSITION,DEFINE,WAIT,AIM,CLICK,SIZE,CENTER,X,Y,STRAIGHT,WATCH,TRIGGER
 import func as f
 
 THRESHOLD = 0.8
@@ -18,18 +19,67 @@ def parse_macro(macro : list):
     
 def execute_macro(macro : list, path_to_command : str, check_all_screens : bool = False):
     current_img_data = {
-        IMG : '',
+        IMG : None,
         POSITION : (None, None),
-        SIZE : (None, None)
+        SIZE : (None, None),
+        TRIGGER : None
     }
     macro_commands = {
         AIM : macro_aim,
         CLICK : macro_click
     }
-    for command in macro:
-        command, value = read_command(command)
+    for macro_dict in macro:
+        type_macro = list(macro_dict.keys())[0]
+        if type_macro == STRAIGHT:
+            execute_straight_macro(macro_dict[type_macro], 
+                                   path_to_command, 
+                                   check_all_screens, 
+                                   macro_commands,
+                                   current_img_data)
+        elif type_macro == WATCH:
+            exec_watch_macros_thread = threading.Thread(name=path_to_command,
+                                                        target=execute_watch_macro,
+                                                        args=(macro_dict[type_macro],
+                                                              path_to_command,
+                                                              check_all_screens,
+                                                              macro_commands,
+                                                              current_img_data,))
+            exec_watch_macros_thread.start()
+            # execute_watch_macro(macro_dict[type_macro], 
+            #                    path_to_command, 
+            #                    check_all_screens, 
+            #                    macro_commands,
+            #                    current_img_data)
+
+def execute_straight_macro(macro : dict, 
+                           path_to_command : str, 
+                           check_all_screens : bool = False, 
+                           macro_commands : dict = {}, 
+                           current_img_data : dict = {}):
+    for command, value in macro.items():
         if command == DEFINE:
             current_img_data = img_define(current_img_data, value, path_to_command, check_all_screens)
+        elif command == WAIT:
+            macro_wait(value)
+        else:
+            macro_commands[command](current_img_data, value)
+
+def execute_watch_macro(macro : dict, 
+                       path_to_command : str, 
+                       check_all_screens : bool = False, 
+                       macro_commands : dict = {},
+                       current_img_data : dict = {}):
+    global trigger_stop
+    trigger_stop = None
+    for command, value in macro.items():
+        if command == TRIGGER:
+            current_img_data[TRIGGER] = value
+            threading.current_thread().name = value
+        elif command == DEFINE:
+            print(current_img_data[IMG], current_img_data[TRIGGER])
+            while current_img_data[IMG] is None and trigger_stop != threading.current_thread().name:
+                current_img_data = img_define(current_img_data, value, path_to_command, check_all_screens)
+                pyautogui.sleep(0.05)
         elif command == WAIT:
             macro_wait(value)
         else:

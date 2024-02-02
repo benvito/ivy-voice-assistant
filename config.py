@@ -29,9 +29,13 @@ PREFIX = "prefix"
 POSTFIX = "postfix"
 COMMAND_FOLDER = "command_folder"
 
+
 ### MACROS ###
 IMG_MACRO = "img_macro"
 CHECK_ALL_SCREENS = "check_all_screens"
+
+STRAIGHT = "straight"
+WATCH = "watch"
 
 IMG = "img"
 POSITION = "position"
@@ -42,6 +46,7 @@ Y = 1
 CENTER = "center"
 
 DEFINE = "define"
+TRIGGER = "trigger"
 WAIT = "wait"
 AIM = "aim"
 CLICK = "click"

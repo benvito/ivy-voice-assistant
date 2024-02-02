@@ -8,6 +8,8 @@ import logging
 import webbrowser
 import wikipediaapi
 from pprint import pprint
+import threading
+import ctypes
 
 from config import *
 import tts
@@ -368,6 +370,8 @@ def fix_command_params(command : dict, command_class : str) -> dict:
             a = command[CMD_ARGS]
         elif command[COMMAND_TYPE] == IMG_MACRO:
             a = command[IMG_MACRO]
+        elif command[COMMAND_TYPE] == TRIGGER:
+            a = command[TRIGGER]
     except Exception as e:
         raise CommandSyntaxInYamlError(command_class=command_class,
                                        key=e)
@@ -476,6 +480,23 @@ def img_macro_command_proccessing(command : dict, command_class : str, voice_inp
 
     return output
 
+def trigger_command_proccessing(command : dict, command_class : str, voice_input : str) -> str:
+    output = ''
+    trigger = command[TRIGGER]
+    threads = threading.enumerate()
+
+    for thread in threads:
+        if thread.name == trigger:
+            # thread_id = ctypes.c_long(thread.ident)
+            # ctypes.pythonapi.PyThreadState_SetAsyncExc(thread_id, ctypes.py_object(SystemExit))
+            imarco.trigger_stop = trigger
+
+    output = create_speech_output(speech_type=command[SPEECH_TYPE],
+                                  speech_list=command[SPEECH_LIST],
+                                  command_class=command_class)
+
+    return output
+
 def exec_nessesary_command(command_class : str, voice_input : str) -> str:
     output = ''
     try:
@@ -497,6 +518,8 @@ def exec_nessesary_command(command_class : str, voice_input : str) -> str:
             output = ahk_command_proccessing(command, command_class, voice_input)
         elif command[COMMAND_TYPE] == IMG_MACRO:
             output = img_macro_command_proccessing(command, command_class, voice_input)
+        elif command[COMMAND_TYPE] == TRIGGER:
+            output = trigger_command_proccessing(command, command_class, voice_input)
         output = f.num_to_word_in_string(output)
     except KeyError as e:
         try:

@@ -77,7 +77,7 @@ def test_model(text):
         print(f"{class_} - {prob}")
 
 train_model()
-test_model("мне кажется ты тупая и не знаешь когда нужно выключить комп")
+# test_model("ты такая тупая это кошмар")
 
 
 @exec_timer

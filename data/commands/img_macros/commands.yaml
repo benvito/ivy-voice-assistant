@@ -9,11 +9,53 @@ img_macros/discord_leave_call:
   command_type: img_macro
   check_all_screens: true
   img_macro: 
-    - define: [img/discord_leave_call/leave1.jpg, img/discord_leave_call/leave2.jpg]
-    - wait: 0.1
-    - aim: center
-    - wait: 0.1
-    - click: 1
+    - straight: 
+        define: [img/discord_leave_call/leave1.jpg, img/discord_leave_call/leave2.jpg]
+        wait: 0.1
+        aim: center
+        wait: 0.1
+        click: 1
   speech_type: dynamic
   speech_list:
     - Звонок завершен
+
+img_macros/lol_auto_accept_game:
+  phrases:
+    - включи автопринятие в лиге легенд
+    - включи автопринятие в лиге
+    - включи автопринятие
+    - включи автопринятие в лол
+    - сама прими игру в лиге
+    - сама прими игру в лиге легенд
+  command_type: img_macro
+  check_all_screens: true
+  img_macro:
+    - watch:
+        trigger: lol_auto_accept_game
+        define: img/lol_auto_accept_game/confirm_button.png
+        wait: 0.1
+        aim: center
+        wait: 0.1
+        click: 1
+  speech_type: dynamic
+  speech_list:
+    - Я приму игру, не переживай
+    - Я нажму кнопку принять, когда она появится
+    - Я приму игру за тебя, можешь отходить
+
+img_macros/lol_auto_accept_game_off:
+  phrases:
+    - выключи автопринятие в лиге легенд
+    - выключи автопринятие в лиге
+    - выключи автопринятие в лол
+    - не принимай игру
+    - не принимай игру в лиге легенд
+    - не принимай игру в лиге
+    - не принимай игру в лол
+  exclude_phrases:
+    - включи
+  command_type: trigger
+  trigger: lol_auto_accept_game
+  speech_type: dynamic
+  speech_list:
+    - Хорошо, я не буду принимать игру за тебя

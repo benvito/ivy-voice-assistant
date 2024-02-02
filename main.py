@@ -35,7 +35,8 @@ if __name__ == "__main__":
     # voice_input = "установи громкость на половину"
     # voice_input = "включи звук"
     # voice_input = "пожалуйста умоляю подскажи время"
-    voice_input = "отключи от звонка в дискорде"
+    # voice_input = "отключи от звонка в дискорде"
+    voice_input = "включи автопринятие в лиге легенд"
     
     command_class = cr.recognize_command(voice_input)
     print(command_class)
@@ -45,3 +46,4 @@ if __name__ == "__main__":
     print(voice_output)
 
     tts.say(voice_output)
+
