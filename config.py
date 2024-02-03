@@ -28,6 +28,7 @@ REGEX_ON = "regex_on"
 PREFIX = "prefix"
 POSTFIX = "postfix"
 COMMAND_FOLDER = "command_folder"
+PHRASE_VAR = "phrase_var"
 
 
 ### MACROS ###

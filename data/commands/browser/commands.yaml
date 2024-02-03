@@ -1,10 +1,17 @@
 browser/open_youtube: # non-system
   phrases:
-    - откроий ютуб
-    - включи ютуб
-    - открой в браузере ютуб
-    - запусти ютуб
-    - ютуб
+    - открой [youtube]
+    - включи [youtube]
+    - открой в браузере [youtube]
+    - запусти [youtube]
+    - "[youtube]"
+  phrase_var:
+    youtube:
+      - ютуб
+      - youtube
+      - видосики
+      - видосик
+      - видео
   command_type: openLink
   link: https://www.youtube.com/
   speech_type: dynamic
@@ -13,11 +20,17 @@ browser/open_youtube: # non-system
 
 browser/open_telegram: # non-system
   phrases:
-    - открой телеграм
-    - включи телеграм
-    - открой в браузере телеграм
-    - запусти телеграм
-    - телеграм
+    - открой [tg]
+    - включи [tg]
+    - открой в браузере [tg]
+    - запусти [tg]
+    - "[tg]"
+  phrase_var:
+    tg:
+      - тг
+      - телеграм
+      - телега
+      - телегу
   command_type: openLink
   link: https://web.telegram.org/
   speech_type: dynamic

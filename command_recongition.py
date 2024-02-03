@@ -8,13 +8,31 @@ from sklearn.metrics import accuracy_score
 import joblib
 import numpy as np
 from decorators import exec_timer
+from config import PHRASES, PHRASE_VAR
 import func as f
+import re
 
 def execute_commands_for_learning(commands : dict):
     learning_commands = {}
     for category, details in commands.items():
-        for phrase in details['phrases']:
-            learning_commands[phrase] = category
+        try:
+            phrase_var = details[PHRASE_VAR]
+        except:
+            details[PHRASE_VAR] = []
+
+        if details[PHRASE_VAR]:
+            vars = details[PHRASE_VAR].keys()
+        else:
+            vars = []
+        for phrase in details[PHRASES]:
+            if any(var in phrase for var in vars):
+                for var in vars:
+                    if var in phrase:
+                        for var_word in details[PHRASE_VAR][var]:
+                            phrase_replaced = re.sub(r"\[[^()]*\]", var_word, phrase)
+                            learning_commands[phrase_replaced] = category
+            else:
+                learning_commands[phrase] = category
 
     return learning_commands
 
