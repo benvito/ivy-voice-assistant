@@ -44,11 +44,19 @@ X = 0
 Y = 1
 
 CENTER = "center"
+LEFT_TOP = "left_top"
+RIGHT_TOP = "right_top"
+LEFT_BOTTOM = "left_bottom"
+RIGHT_BOTTOM = "right_bottom"
+LEFT_CENTER = "left_center"
+RIGHT_CENTER = "right_center"
 
 DEFINE = "define"
 TRIGGER = "trigger"
 WAIT = "wait"
 AIM = "aim"
+POS = "pos"
+MOVE = "move"
 CLICK = "click"
 
 ### ERROR CODES ###

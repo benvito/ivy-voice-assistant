@@ -28,7 +28,7 @@ if __name__ == "__main__":
     # voice_input = "не выключай комп"
     # voice_input = "сколько сейчас время"
     # voice_input = "Привет"
-    # voice_input = "телеграм"
+    voice_input = "телеграм"
     # voice_input = "значение слова компьютер"
     # voice_input = "назови случайное число от пятьсот до пятьсот один"
     # voice_input = "громкость девяносто пять"
@@ -36,7 +36,8 @@ if __name__ == "__main__":
     # voice_input = "включи звук"
     # voice_input = "пожалуйста умоляю подскажи время"
     # voice_input = "отключи от звонка в дискорде"
-    voice_input = "включи автопринятие в лиге легенд"
+    # voice_input = "включи автопринятие в лиге легенд"
+    voice_input = "переключи серию"
     
     command_class = cr.recognize_command(voice_input)
     print(command_class)

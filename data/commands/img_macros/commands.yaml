@@ -10,11 +10,11 @@ img_macros/discord_leave_call:
   check_all_screens: true
   img_macro: 
     - straight: 
-        define: [img/discord_leave_call/leave1.jpg, img/discord_leave_call/leave2.jpg]
-        wait: 0.1
-        aim: center
-        wait: 0.1
-        click: 1
+        - define: [img/discord_leave_call/leave1.jpg, img/discord_leave_call/leave2.jpg]
+        - wait: 0.1
+        - aim: center
+        - wait: 0.1
+        - click: 1
   speech_type: dynamic
   speech_list:
     - Звонок завершен
@@ -31,12 +31,12 @@ img_macros/lol_auto_accept_game:
   check_all_screens: true
   img_macro:
     - watch:
-        trigger: lol_auto_accept_game
-        define: img/lol_auto_accept_game/confirm_button.png
-        wait: 0.1
-        aim: center
-        wait: 0.1
-        click: 1
+        - trigger: lol_auto_accept_game
+        - define: img/lol_auto_accept_game/confirm_button.png
+        - wait: 0.1
+        - aim: center
+        - wait: 0.1
+        - click: 1
   speech_type: dynamic
   speech_list:
     - Я приму игру, не переживай
@@ -59,3 +59,37 @@ img_macros/lol_auto_accept_game_off:
   speech_type: dynamic
   speech_list:
     - Хорошо, я не буду принимать игру за тебя
+
+img_macros/anime_next:
+  phrases:
+    - переключи серию
+    - включи следующую серию
+    - следующая серия
+    - следующую серию
+  command_type: img_macro
+  check_all_screens: true
+  img_macro:
+    - straight:
+        - define: img/anime_next/fullscreen_leave_button.jpg
+        - wait: 0.05
+        - aim: center
+        - wait: 0.05
+        - click: 1
+        - wait: 0.2
+        - define: img/anime_next/series_switcher.jpg
+        - wait: 0.05
+        - aim: right_center
+        - wait: 0.05
+        - click: 1
+        - wait: 2
+        - move: 0 -80
+        - wait: 0.05
+        - click: 1
+        - define: img/anime_next/fullscreen_button.jpg
+        - wait: 0.05
+        - aim: center
+        - wait: 0.05
+        - click: 1
+  speech_type: dynamic
+  speech_list:
+    - Следующая серия

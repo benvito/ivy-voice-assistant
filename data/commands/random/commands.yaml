@@ -19,7 +19,7 @@ random/random_number: # semi-system
     - Мне больше нравится
     - Я назову число
 
-coin_flip: # non-system
+random/coin_flip: # non-system
   phrases:
     - монетка
     - подбрось монетку

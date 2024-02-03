@@ -1,6 +1,6 @@
 browser/open_youtube: # non-system
   phrases:
-    - открои? ютуб
+    - откроий ютуб
     - включи ютуб
     - открой в браузере ютуб
     - запусти ютуб
@@ -13,7 +13,7 @@ browser/open_youtube: # non-system
 
 browser/open_telegram: # non-system
   phrases:
-    - открои? телеграм
+    - открой телеграм
     - включи телеграм
     - открой в браузере телеграм
     - запусти телеграм

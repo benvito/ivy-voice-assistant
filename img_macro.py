@@ -6,7 +6,7 @@ import os
 import mss
 import threading
 
-from config import IMG_MACRO,IMG,POSITION,DEFINE,WAIT,AIM,CLICK,SIZE,CENTER,X,Y,STRAIGHT,WATCH,TRIGGER
+from config import IMG_MACRO,IMG,POSITION,DEFINE,WAIT,AIM,CLICK,SIZE,CENTER,X,Y,POS,MOVE,STRAIGHT,WATCH,TRIGGER,LEFT_TOP,RIGHT_TOP,LEFT_BOTTOM,RIGHT_BOTTOM,LEFT_CENTER,RIGHT_CENTER
 import func as f
 
 THRESHOLD = 0.8
@@ -18,17 +18,19 @@ def parse_macro(macro : list):
     pass
     
 def execute_macro(macro : list, path_to_command : str, check_all_screens : bool = False):
-    current_img_data = {
-        IMG : None,
-        POSITION : (None, None),
-        SIZE : (None, None),
-        TRIGGER : None
-    }
     macro_commands = {
+        MOVE : macro_move_to,
+        POS : macro_position,
         AIM : macro_aim,
         CLICK : macro_click
     }
     for macro_dict in macro:
+        current_img_data = {
+            IMG : None,
+            POSITION : (None, None),
+            SIZE : (None, None),
+            TRIGGER : None
+        }
         type_macro = list(macro_dict.keys())[0]
         if type_macro == STRAIGHT:
             execute_straight_macro(macro_dict[type_macro], 
@@ -51,12 +53,13 @@ def execute_macro(macro : list, path_to_command : str, check_all_screens : bool 
             #                    macro_commands,
             #                    current_img_data)
 
-def execute_straight_macro(macro : dict, 
+def execute_straight_macro(macro : list, 
                            path_to_command : str, 
                            check_all_screens : bool = False, 
                            macro_commands : dict = {}, 
                            current_img_data : dict = {}):
-    for command, value in macro.items():
+    for line in macro:
+        command, value = read_command(line)
         if command == DEFINE:
             current_img_data = img_define(current_img_data, value, path_to_command, check_all_screens)
         elif command == WAIT:
@@ -64,14 +67,15 @@ def execute_straight_macro(macro : dict,
         else:
             macro_commands[command](current_img_data, value)
 
-def execute_watch_macro(macro : dict, 
+def execute_watch_macro(macro : list, 
                        path_to_command : str, 
                        check_all_screens : bool = False, 
                        macro_commands : dict = {},
                        current_img_data : dict = {}):
     global trigger_stop
     trigger_stop = None
-    for command, value in macro.items():
+    for line in macro:
+        command, value = read_command(line)
         if command == TRIGGER:
             current_img_data[TRIGGER] = value
             threading.current_thread().name = value
@@ -85,14 +89,34 @@ def execute_watch_macro(macro : dict,
         else:
             macro_commands[command](current_img_data, value)
 
+def macro_move_to(current_img_data : dict, value : str):
+    coords = list(map(int, value.split(" ")))
+    pyautogui.moveRel(coords)
+
+def macro_position(current_img_data : dict, value : str):
+    coords = list(map(int, value.split(" ")))
+    pyautogui.moveTo(value)
+
 def macro_aim(current_img_data : dict, value : str):
     if current_img_data[IMG] is not None:
         AIM_TO = {
             CENTER : (current_img_data[POSITION][X] + current_img_data[SIZE][X] / 2, 
-                    current_img_data[POSITION][Y] + current_img_data[SIZE][Y] / 2)
+                    current_img_data[POSITION][Y] + current_img_data[SIZE][Y] / 2),
+            LEFT_TOP : (current_img_data[POSITION][X] + 1, 
+                        current_img_data[POSITION][Y] + 1),
+            LEFT_BOTTOM : (current_img_data[POSITION][X] + 1, 
+                           current_img_data[POSITION][Y] + current_img_data[SIZE][Y] - 1),
+            LEFT_CENTER : (current_img_data[POSITION][X] + 1, 
+                           current_img_data[POSITION][Y] + current_img_data[SIZE][Y] / 2),
+            RIGHT_TOP : (current_img_data[POSITION][X] + current_img_data[SIZE][X] - 1, 
+                         current_img_data[POSITION][Y] + 1),
+            RIGHT_BOTTOM : (current_img_data[POSITION][X] + current_img_data[SIZE][X] - 1,
+                            current_img_data[POSITION][Y] + current_img_data[SIZE][Y] - 1),
+            RIGHT_CENTER : (current_img_data[POSITION][X] + current_img_data[SIZE][X] - 1,
+                            current_img_data[POSITION][Y] + current_img_data[SIZE][Y] / 2)
         }
         pyautogui.moveTo(AIM_TO[value])
-        print(f"aimed at {current_img_data[POSITION]} at {value}")
+        # print(f"aimed at {current_img_data[POSITION]} at {value}")
 
 def macro_click(current_img_data : dict, value : int):
     mouse_button = {
@@ -101,11 +125,11 @@ def macro_click(current_img_data : dict, value : int):
         3 : 'middle'
     }
     pyautogui.click(button=mouse_button[value])
-    print(f"clicked {value} at {current_img_data[POSITION]}")
+    # print(f"clicked {value} at {current_img_data[POSITION]}")
 
 def macro_wait(value : float):
     pyautogui.sleep(float(value))
-    print(f"waited for a {value}")
+    # print(f"waited for a {value}")
 
 def get_img_size(image : str) -> (int, int):
     w, h = cv2.imread(image).shape[::-1][:2]
@@ -147,5 +171,5 @@ def img_define(current_img_data : dict, image : str or list, path_to_command : s
     current_img_data[POSITION] = (img_x, img_y)
     current_img_data[SIZE] = (w, h)
 
-    print(current_img_data)
+    # print(current_img_data)
     return current_img_data
