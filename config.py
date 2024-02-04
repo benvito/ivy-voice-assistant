@@ -29,7 +29,9 @@ PREFIX = "prefix"
 POSTFIX = "postfix"
 COMMAND_FOLDER = "command_folder"
 PHRASE_VAR = "phrase_var"
-
+OPEN_PROGRAM = "openProgram"
+PROGRAM = "program"
+PATH = "path"
 
 ### MACROS ###
 IMG_MACRO = "img_macro"

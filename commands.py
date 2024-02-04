@@ -372,6 +372,8 @@ def fix_command_params(command : dict, command_class : str) -> dict:
             a = command[IMG_MACRO]
         elif command[COMMAND_TYPE] == TRIGGER:
             a = command[TRIGGER]
+        elif command[COMMAND_TYPE] == OPEN_PROGRAM:
+            a = command[PROGRAM]
     except Exception as e:
         raise CommandSyntaxInYamlError(command_class=command_class,
                                        key=e)
@@ -497,6 +499,18 @@ def trigger_command_proccessing(command : dict, command_class : str, voice_input
 
     return output
 
+def open_program_command_proccessing(command : dict, command_class : str, voice_input : str) -> str:
+    output = ''
+
+    program_path = f.get_program_path(command[PROGRAM], command_class)
+    print("OPENING PROGRAM: ", program_path)
+    os.startfile('"data\\commands\\programs\\programs_links\\yandex_music.lnk"')
+
+    output = create_speech_output(speech_type=command[SPEECH_TYPE],
+                                  speech_list=command[SPEECH_LIST],
+                                  command_class=command_class)
+    return output
+
 def exec_nessesary_command(command_class : str, voice_input : str) -> str:
     output = ''
     try:
@@ -504,22 +518,20 @@ def exec_nessesary_command(command_class : str, voice_input : str) -> str:
         command = f.load_command_data(command_class)[command_class]
         command = fix_command_params(command, command_class)
 
-        if command[COMMAND_TYPE] == CMD:
-            output = cmd_command_proccessing(command, command_class, voice_input)
-        elif command[COMMAND_TYPE] == DIALOG:
-            output = dialog_command_proccessing(command, command_class, voice_input)
-        elif command[COMMAND_TYPE] == OPEN_LINK:
-            output = open_link_command_proccessing(command, command_class, voice_input)
-        elif command[COMMAND_TYPE] == WIKIPEDIA:
-            output = wikipedia_command_proccessing(command, command_class, voice_input)
-        elif command[COMMAND_TYPE] == RANDOM:
-            output = random_command_proccessing(command, command_class, voice_input)
-        elif command[COMMAND_TYPE] == AHK:
-            output = ahk_command_proccessing(command, command_class, voice_input)
-        elif command[COMMAND_TYPE] == IMG_MACRO:
-            output = img_macro_command_proccessing(command, command_class, voice_input)
-        elif command[COMMAND_TYPE] == TRIGGER:
-            output = trigger_command_proccessing(command, command_class, voice_input)
+        exec_command = {
+            CMD : cmd_command_proccessing,
+            DIALOG : dialog_command_proccessing,
+            OPEN_LINK : open_link_command_proccessing,
+            WIKIPEDIA : wikipedia_command_proccessing,
+            RANDOM : random_command_proccessing,
+            AHK : ahk_command_proccessing,
+            IMG_MACRO : img_macro_command_proccessing,
+            TRIGGER : trigger_command_proccessing,
+            OPEN_PROGRAM : open_program_command_proccessing
+        }
+
+        output = exec_command[command[COMMAND_TYPE]](command, command_class, voice_input)
+
         output = f.num_to_word_in_string(output)
     except KeyError as e:
         try:
