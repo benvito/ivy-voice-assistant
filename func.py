@@ -14,7 +14,7 @@ from decorators import exec_timer
 WORD_MATCH_RATIO = 80
 
 def get_program_path(program_name : str, command_class : str) -> str:
-    yaml_path = os.path.join(path_to_command(command_class), 'programs.yaml')
+    yaml_path = os.path.join('data', 'commands', 'programs.yaml')
     programs_data = dict(yaml.safe_load(open(yaml_path, 'r', encoding='utf-8')))
     program_path = os.path.normpath(programs_data[program_name][PATH])
     if 'username' in program_path:

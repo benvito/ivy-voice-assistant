@@ -32,6 +32,8 @@ PHRASE_VAR = "phrase_var"
 OPEN_PROGRAM = "openProgram"
 PROGRAM = "program"
 PATH = "path"
+HYBRID = "hybrid"
+COMMAND = "command"
 
 ### MACROS ###
 IMG_MACRO = "img_macro"

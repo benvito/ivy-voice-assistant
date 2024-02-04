@@ -1,0 +1,28 @@
+---
+presets/test:
+  phrases:
+    - "[preset] работа"
+  phrase_var:
+    preset:
+      - пресет
+      - конфигурация
+      - режим
+      - хочу
+  command_type: hybrid
+  command:
+    - 1:
+        command_type: openLink
+        link: www.youtube.com
+    - 2:
+        command_type: openProgram
+        program: Notepad
+    - 3:
+        command_type: cmd
+        cmd_command: shutdown
+        cmd_args:
+          /s:
+          /t:
+          5000:
+  speech_type: dynamic
+  speech_list:
+    - Рабочий режим включен

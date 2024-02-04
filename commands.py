@@ -352,14 +352,9 @@ def wikipedia_command_proccessing(command : dict, command_class : str, voice_inp
 
     return output    
 
-def fix_command_params(command : dict, command_class : str) -> dict:
-    command[COMMAND_FOLDER] = f.path_to_command(command_class)
-
+def hybrid_command_validator(command : dict) -> bool:
     try:
-        a = command[SPEECH_TYPE]
-        a = command[SPEECH_LIST]
-        a = command[COMMAND_TYPE]
-        a = command[PHRASES]
+        command_type = command[COMMAND_TYPE]
         if command[COMMAND_TYPE] == CMD:
             a = command[CMD_COMMAND]
         elif command[COMMAND_TYPE] == OPEN_LINK:
@@ -374,17 +369,38 @@ def fix_command_params(command : dict, command_class : str) -> dict:
             a = command[TRIGGER]
         elif command[COMMAND_TYPE] == OPEN_PROGRAM:
             a = command[PROGRAM]
-    except Exception as e:
-        raise CommandSyntaxInYamlError(command_class=command_class,
-                                       key=e)
+    except KeyError:
+        raise CommandSyntaxInYamlError(command_class='hybrid',
+                                       key='command_type')
     
+    try:
+        a = command[SPEECH_TYPE]
+    except KeyError:
+        command[SPEECH_TYPE] = 'dynamic'
+
+    try:
+        a = command[SPEECH_LIST]
+    except KeyError:
+        command[SPEECH_LIST] = None
+
+    try:
+        a = command[PHRASES]
+    except KeyError:
+        command[PHRASES] = None
+    
+    command = fix_non_necessary_params(command)
+
+    return command
+
+def fix_non_necessary_params(command : dict) -> dict:
     try:
         a = command[CMD_ARGS]
     except:
         command[CMD_ARGS] = dict()
 
     try:
-        a = command[ARGS_SEP]
+        if command[COMMAND_TYPE] == CMD:
+            a = command[ARGS_SEP]
     except:
         command[ARGS_SEP] = CONCAT
 
@@ -421,6 +437,36 @@ def fix_command_params(command : dict, command_class : str) -> dict:
         except:
             command[CMD_ARGS][arg][POSTFIX] = ''
 
+    return command
+def fix_command_params(command : dict, command_class : str) -> dict:
+    command[COMMAND_FOLDER] = f.path_to_command(command_class)
+
+    try:
+        a = command[SPEECH_TYPE]
+        a = command[SPEECH_LIST]
+        a = command[COMMAND_TYPE]
+        a = command[PHRASES]
+        if command[COMMAND_TYPE] == CMD:
+            a = command[CMD_COMMAND]
+        elif command[COMMAND_TYPE] == OPEN_LINK:
+            a = command[LINK]
+        elif command[COMMAND_TYPE] == AHK:
+            a = command[AHK_PATH]
+        elif command[COMMAND_TYPE] == WIKIPEDIA:
+            a = command[CMD_ARGS]
+        elif command[COMMAND_TYPE] == IMG_MACRO:
+            a = command[IMG_MACRO]
+        elif command[COMMAND_TYPE] == TRIGGER:
+            a = command[TRIGGER]
+        elif command[COMMAND_TYPE] == OPEN_PROGRAM:
+            a = command[PROGRAM]
+        elif command[COMMAND_TYPE] == HYBRID:
+            a = command[COMMAND]
+    except Exception as e:
+        raise CommandSyntaxInYamlError(command_class=command_class,
+                                       key=e)
+    
+    command = fix_non_necessary_params(command)
 
     return command
 
@@ -503,12 +549,48 @@ def open_program_command_proccessing(command : dict, command_class : str, voice_
     output = ''
 
     program_path = f.get_program_path(command[PROGRAM], command_class)
-    print("OPENING PROGRAM: ", program_path)
-    os.startfile('"data\\commands\\programs\\programs_links\\yandex_music.lnk"')
+
+    os.system(program_path)
 
     output = create_speech_output(speech_type=command[SPEECH_TYPE],
                                   speech_list=command[SPEECH_LIST],
                                   command_class=command_class)
+    return output
+
+def hybrid_command_proccessing(command : dict, command_class : str, voice_input : str) -> str:
+    output = ''
+    exec_command = {
+            CMD : cmd_command_proccessing,
+            DIALOG : dialog_command_proccessing,
+            OPEN_LINK : open_link_command_proccessing,
+            WIKIPEDIA : wikipedia_command_proccessing,
+            RANDOM : random_command_proccessing,
+            AHK : ahk_command_proccessing,
+            IMG_MACRO : img_macro_command_proccessing,
+            TRIGGER : trigger_command_proccessing,
+            OPEN_PROGRAM : open_program_command_proccessing,
+            HYBRID : hybrid_command_proccessing
+        }
+
+    command_hybrid = command[COMMAND]
+    commands_output = ''
+
+    try:
+        for cmd in command_hybrid:
+            cmd = list(cmd.values())[0]
+            cmd = hybrid_command_validator(cmd)
+            commands_output += exec_command[cmd[COMMAND_TYPE]](cmd, command_class, voice_input) + ' '
+    except Exception as e:
+        raise UnknownError(command_class=command_class,
+                           message=e)
+
+
+    output = create_speech_output(speech_type=command[SPEECH_TYPE],
+                                  speech_list=command[SPEECH_LIST],
+                                  speech_output=command[SPEECH_OUTPUT],
+                                  command_class=command_class,
+                                  command_output=commands_output)
+    
     return output
 
 def exec_nessesary_command(command_class : str, voice_input : str) -> str:
@@ -527,7 +609,8 @@ def exec_nessesary_command(command_class : str, voice_input : str) -> str:
             AHK : ahk_command_proccessing,
             IMG_MACRO : img_macro_command_proccessing,
             TRIGGER : trigger_command_proccessing,
-            OPEN_PROGRAM : open_program_command_proccessing
+            OPEN_PROGRAM : open_program_command_proccessing,
+            HYBRID : hybrid_command_proccessing
         }
 
         output = exec_command[command[COMMAND_TYPE]](command, command_class, voice_input)
@@ -541,6 +624,9 @@ def exec_nessesary_command(command_class : str, voice_input : str) -> str:
             e.proccess_critical_error()
         output = None
     except CommandSyntaxInYamlError as e:
+        e.proccess_critical_error()
+        output = None
+    except UnknownError as e:
         e.proccess_critical_error()
         output = None
     return output
