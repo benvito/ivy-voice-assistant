@@ -48,12 +48,34 @@ volume/set_half:
     - Выполнено
     - Как скажешь
 
+volume/set_max:
+  phrases:
+    - установи громкость на максимум
+    - установить громкость на максимум
+    - поставь громкость на максимум
+    - громкость на максимум
+    - максимум громкости
+  necessary_phrases:
+    - максимум
+  command_type: ahk
+  ahk_path: ahk/set_volume.exe
+  cmd_args:
+    100:
+  speech_output: false
+  speech_type: dynamic
+  speech_list:
+    - Громкость установлена
+    - Сделано
+    - Выполнено
+
 volume/mute:
   phrases:
     - выключи звук
     - отключи звук
     - беззвучный режим
     - без звука
+    - громкость на минимум
+    - минимум громкости
   exclude_phrases:
     - включи
     - включить

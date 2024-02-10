@@ -64,7 +64,12 @@
 # proc = CommandProcessor()
 # proc.print()
 
-from fuzzywuzzy import fuzz as f 
-voice_input = "открой мне визжал студио код"
-ratio = f.token_sort_ratio(voice_input, "открой вижуал студио код")
-print(ratio)
+# from fuzzywuzzy import fuzz as f 
+# voice_input = "открой мне визжал студио код"
+# ratio = f.token_sort_ratio(voice_input, "открой вижуал студио код")
+# print(ratio)
+
+import os
+ 
+current_file = os.path.realpath(__file__)
+print(current_file)
