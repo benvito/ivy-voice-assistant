@@ -13,175 +13,172 @@ from decorators import exec_timer
 
 WORD_MATCH_RATIO = 80
 
-def get_program_path(program_name : str, command_class : str) -> str:
-    yaml_path = os.path.join('data', 'commands', 'programs.yaml')
-    programs_data = dict(yaml.safe_load(open(yaml_path, 'r', encoding='utf-8')))
-    program_path = os.path.normpath(programs_data[program_name][PATH])
-    if 'username' in program_path:
-        program_path = program_path.replace('username', os.environ['USERNAME'])
-    return '"' + program_path + '"'
+class YamlData:
+    @staticmethod
+    def get_program_path(program_name : str) -> str:
+        yaml_path = os.path.join('data', 'commands', 'programs.yaml')
+        programs_data = dict(yaml.safe_load(open(yaml_path, 'r', encoding='utf-8')))
+        program_path = os.path.normpath(programs_data[program_name][PATH])
+        if 'username' in program_path:
+            program_path = program_path.replace('username', os.environ['USERNAME'])
+        return '"' + program_path + '"'
 
-@exec_timer
-def path_to_command(command_class : str) -> str:
-    command_folder = command_class.split('/')[0]
-    return os.path.join('.', 'data', 'commands', command_folder)
+    @staticmethod
+    @exec_timer
+    def path_to_command(command_class : str) -> str:
+        command_folder = command_class.split('/')[0]
+        return os.path.join('.', 'data', 'commands', command_folder)
 
-@exec_timer
-def load_command_data(command_class : str) -> dict:
-    command_folder = command_class.split('/')[0]
-    yaml_path = os.path.join('.', 'data', 'commands', command_folder, 'commands.yaml')
-    command_data = dict(yaml.safe_load(open(yaml_path, 'r', encoding='utf-8')))
-    return command_data
+    @staticmethod
+    @exec_timer
+    def load_command_data(command_class : str) -> dict:
+        command_folder = command_class.split('/')[0]
+        yaml_path = os.path.join('.', 'data', 'commands', command_folder, 'commands.yaml')
+        command_data = dict(yaml.safe_load(open(yaml_path, 'r', encoding='utf-8')))
+        return command_data
 
-@exec_timer
-def load_all_commands_dict() -> dict:
-    commands = dict()
-    for dirName, subdirList, fileList in os.walk(".\\data\\commands\\"):
-        if "commands.yaml" in fileList:
-            commands.update(dict(yaml.safe_load(open(os.path.join(dirName, 'commands.yaml'), 'r', encoding='utf-8'))))
-    return commands
+    @staticmethod
+    @exec_timer
+    def load_all_commands_dict() -> dict:
+        commands = dict()
+        for dirName, subdirList, fileList in os.walk(".\\data\\commands\\"):
+            if "commands.yaml" in fileList:
+                commands.update(dict(yaml.safe_load(open(os.path.join(dirName, 'commands.yaml'), 'r', encoding='utf-8'))))
+        return commands
 
-@exec_timer
-def load_all_commands_classes() -> list:
-    commands = load_all_commands_dict()
-    return commands.keys()
+    @staticmethod
+    @exec_timer
+    def load_all_commands_classes() -> list:
+        commands = YamlData.load_all_commands_dict()
+        return commands.keys()
 
-@exec_timer
-def remove_brackets(text):
-    pattern = r'\([^()]*\)'
-    while re.search(pattern, text):
-        text = re.sub(pattern, '', text)
-    return text
 
-def list_to_string(list: list) -> str:
-    return ' '.join(list)
+class StringProcessing:
+    @staticmethod
+    @exec_timer
+    def remove_brackets(text):
+        pattern = r'\([^()]*\)'
+        while re.search(pattern, text):
+            text = re.sub(pattern, '', text)
+        return text
 
-def is_hour(word):
-    return word == 'час' or \
-            word == 'часа' or \
-            word == 'часов' or \
-            word == 'часик' or \
-            word == 'часика' or \
-            word == 'часиков'
+    @staticmethod
+    def list_to_string(list: list) -> str:
+        return ' '.join(list)
 
-def is_minute(word):
-    return word == 'минута' or \
-            word == 'минут' or \
-            word == 'минуты' or \
-            word == 'минуток' or \
-            word == 'минутки' or \
-            word == 'минутку'
+    @staticmethod
+    def contains_substring(list_of_strings, substring):
+        return any(substring in s for s in list_of_strings)
 
-def is_second(word):
-    return word == 'секунда' or \
-            word == 'секунд' or \
-            word == 'секунды' or \
-            word == 'секундок' or \
-            word == 'секундочек' or \
-            word == 'секундочку' or \
-            word == 'секундочки'
 
-def convert_to_seconds(time : [(str, str), ...]) -> int:
-    time_in_seconds = 0
-    for arg in time:
-        if is_hour(arg[-1]):
-            time_in_seconds += int(arg[0]) * 3600
-        elif is_minute(arg[-1]):
-            time_in_seconds += int(arg[0]) * 60
-        elif is_second(arg[-1]):
-            time_in_seconds += int(arg[0])
-    return time_in_seconds
+class Time:
+    @staticmethod
+    def is_hour(word):
+        return word == 'час' or \
+                word == 'часа' or \
+                word == 'часов' or \
+                word == 'часик' or \
+                word == 'часика' or \
+                word == 'часиков'
 
-def convert_to_nanoseconds(re_arguments):
-    result = convert_to_seconds(re_arguments)
-    result = result * SECOND_TO_NANO
-    return result
+    @staticmethod
+    def is_minute(word):
+        return word == 'минута' or \
+                word == 'минут' or \
+                word == 'минуты' or \
+                word == 'минуток' or \
+                word == 'минутки' or \
+                word == 'минутку'
 
-@exec_timer
-def word_to_num_in_string(text : str) -> str:
-    text = alpha2digit(text, 'ru')
-    # for i in range(len(text)):
-    #     try:
-    #         cur_number = w2n.word_to_num(text[i])
-    #         text[i] = str(cur_number)
-    #     except ValueError:
-    #         pass
-    
-    # text_result = text
-    # replace_index = None
-    # delete_indexes = []
-    # print(text)
-    # for i in range(len(text)):
-    #     cur_number = 0
-    #     if text[i].isdigit():
-    #         cur_number = int(text[i])
-    #         replace_index = i
-    #         if i < len(text) - 2:
-    #             for j in range(i+1, len(text)):
-    #                 print(text[j])
-    #                 if text[j].isdigit() and str(cur_number)[-1] == '0' and cur_number >= 20 and len(str(cur_number)) > len(text[j]):
-    #                     cur_number += int(text[j])
-    #                     delete_indexes.append(j)
-    #                 else:
-    #                     text_result[replace_index] = str(cur_number)
-    #                     break
-    # print(delete_indexes)
-    # for del_index in sorted(delete_indexes, reverse=True):
-    #     text_result.pop(del_index)
-    # print(text)
-    # text = ' '.join(text_result)
-    return text
+    @staticmethod
+    def is_second(word):
+        return word == 'секунда' or \
+                word == 'секунд' or \
+                word == 'секунды' or \
+                word == 'секундок' or \
+                word == 'секундочек' or \
+                word == 'секундочку' or \
+                word == 'секундочки'
 
-def contains_substring(list_of_strings, substring):
-   return any(substring in s for s in list_of_strings)
+    @staticmethod
+    def convert_to_seconds(time : [(str, str), ...]) -> int:
+        time_in_seconds = 0
+        for arg in time:
+            if Time.is_hour(arg[-1]):
+                time_in_seconds += int(arg[0]) * 3600
+            elif Time.is_minute(arg[-1]):
+                time_in_seconds += int(arg[0]) * 60
+            elif Time.is_second(arg[-1]):
+                time_in_seconds += int(arg[0])
+        return time_in_seconds
 
-def num_to_word_in_string(text : str) -> str:
-    if not text:
-        return None
-    for word in text.split():
-        if word.isdigit():
-            text = text.replace(word, num2words(word, lang="ru"))
-    return text
+    @staticmethod
+    def convert_to_nanoseconds(re_arguments):
+        result = Time.convert_to_seconds(re_arguments)
+        result = result * SECOND_TO_NANO
+        return result
 
-@exec_timer
-def inflect_word_with_count(word : str, count : int) -> str:
-    morph = MorphAnalyzer()
-    morph_word = morph.parse(word)[0]
-    inflected_word = morph_word.make_agree_with_number(count).word
-    return inflected_word
+    @staticmethod
+    @exec_timer
+    def time_format_for_string(text: str) -> str:
+        time_part = ''
+        time_delim = ':'
 
-@exec_timer
-def time_format_for_string(text: str) -> str:
-    time_part = ''
-    time_delim = ':'
+        for i in range(len(text)):
+            if text[i] in TIME_DELIMITER:
+                time_delim = text[i]
+                if text[i-2].isdigit():
+                    time_part += text[i-2]
+                time_part += text[i-1:i+1]
+                if text[i+1].isdigit():
+                    time_part += text[i+1:i+3]
+                if text[i+3] in TIME_DELIMITER:
+                    time_part += text[i+3:i+5]
+                break
 
-    for i in range(len(text)):
-        if text[i] in TIME_DELIMITER:
-            time_delim = text[i]
-            if text[i-2].isdigit():
-                time_part += text[i-2]
-            time_part += text[i-1:i+1]
-            if text[i+1].isdigit():
-                time_part += text[i+1:i+3]
-            if text[i+3] in TIME_DELIMITER:
-                time_part += text[i+3:i+5]
-            break
+        time_part = time_part.split(time_delim)
 
-    time_part = time_part.split(time_delim)
+        time_words = ['час', 'минута', 'секунда']
 
-    time_words = ['час', 'минута', 'секунда']
+        time_result_string = ''
 
-    time_result_string = ''
+        for i in range(len(time_part)):
+            if time_part[i].isdigit():
+                inflected_time_word = WordNum.inflect_word_with_count(time_words[i], int(time_part[i]))
+                time_result_string += time_part[i] + ' ' + inflected_time_word
+            if i != len(time_part) - 1:
+                time_result_string += ' '
 
-    for i in range(len(time_part)):
-        if time_part[i].isdigit():
-            inflected_time_word = inflect_word_with_count(time_words[i], int(time_part[i]))
-            time_result_string += time_part[i] + ' ' + inflected_time_word
-        if i != len(time_part) - 1:
-            time_result_string += ' '
+        return time_result_string
 
-    return time_result_string
 
+class WordNum:
+    """
+    ALL ABOUT RELATIONS WITH WORDS AND NUMBERS 
+    """
+
+    @staticmethod
+    @exec_timer
+    def word_to_num_in_string(text : str) -> str:
+        text = alpha2digit(text, 'ru')
+        return text
+
+    @staticmethod
+    def num_to_word_in_string(text : str) -> str:
+        if not text:
+            return None
+        for word in text.split():
+            if word.isdigit():
+                text = text.replace(word, num2words(word, lang="ru"))
+        return text
+
+    @staticmethod
+    @exec_timer
+    def inflect_word_with_count(word : str, count : int) -> str:
+        morph = MorphAnalyzer()
+        morph_word = morph.parse(word)[0]
+        inflected_word = morph_word.make_agree_with_number(count).word
+        return inflected_word
 
 def word_is_in_list(word : str, text : list) -> int:
     for i in range(len(text)):
@@ -191,6 +188,12 @@ def word_is_in_list(word : str, text : list) -> int:
 
 def diff_words(word1 : str, word2 : str) -> float:
     return fuzz.token_sort_ratio(word1.lower(), word2.lower())
+    
+def is_this_word(word_predicted : str, word_expected : str) -> bool:
+    ratio = diff_words(word_predicted, word_expected)
+    if ratio >= WORD_MATCH_RATIO:
+        return True
+    return False
 
 def round_word_by_similarity(word_predicted : str, word_expected : str) -> str:
     ratio = diff_words(word_predicted, word_expected)
@@ -198,18 +201,6 @@ def round_word_by_similarity(word_predicted : str, word_expected : str) -> str:
         return word_expected
     else:
         return word_predicted
-    
-def is_this_word(word_predicted : str, word_expected : str) -> bool:
-    ratio = diff_words(word_predicted, word_expected)
-    if ratio >= WORD_MATCH_RATIO:
-        return True
-    # else:
-    #     ratio = diff_words(determ_word(word_predicted), word_expected)
-    #     if ratio >= WORD_MATCH_RATIO:
-    #         print(determ_word(word_predicted), word_expected, ' - ', ratio)
-    #         return True
-    
-    return False
 
 def pick_word_from_list_by_similarity(word : str, word_list : list or set) -> str:
     max_ratio = 0

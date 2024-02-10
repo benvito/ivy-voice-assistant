@@ -9,3 +9,5 @@ Explorer:
   path: C:\Windows\explorer.exe
 Task Manager:
   path: C:/Windows/System32/taskmgr.exe
+Cmd:
+  path: C:\Windows\System32\cmd.exe

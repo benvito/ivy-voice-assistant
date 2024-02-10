@@ -1,7 +1,18 @@
-import tts
+from tts import TextToSpeech
 import logging
 
-class RegexArgumentError(Exception):
+class SayException(Exception):
+    def say(self):
+        if self.say_message != '':
+            TextToSpeech.say(self.say_message)
+
+    def __str__(self):
+        return self.message
+
+    def __repr__(self):
+        return self.message
+
+class RegexArgumentError(SayException):
     def __init__(self, 
                  command_class='', 
                  code=11,  
@@ -14,24 +25,15 @@ class RegexArgumentError(Exception):
         self.command_class = command_class
         self.argument = argument
 
-    def say(self):
-        if self.say_message != '':
-            tts.say(self.say_message)
-
     def log_critical_error(self):
         logging.critical(f"{self.__class__.__name__} in '{self.command_class}':Error_code={self.code}:{self.argument}:{self.message}.")
 
     def proccess_critical_error(self):
         self.say()
         self.log_critical_error()
-
-    def __str__(self):
-        return self.message
-
-    def __repr__(self):
-        return self.message
     
-class RegexPatternError(Exception):
+
+class RegexPatternError(SayException):
     def __init__(self, 
                  command_class='', 
                  code=12,  
@@ -44,10 +46,6 @@ class RegexPatternError(Exception):
         self.command_class = command_class
         self.argument = argument
 
-    def say(self):
-        if self.say_message != '':
-            tts.say(self.say_message)
-
     def log_critical_error(self):
         logging.critical(f"{self.__class__.__name__} in '{self.command_class}':Error_code={self.code}:{self.argument}:{self.message}.")
 
@@ -55,13 +53,7 @@ class RegexPatternError(Exception):
         self.say()
         self.log_critical_error()
 
-    def __str__(self):
-        return self.message
-
-    def __repr__(self):
-        return self.message
-
-class ArgumentError(Exception):
+class ArgumentError(SayException):
     def __init__(self, 
                  command_class='', 
                  code=10,  
@@ -74,10 +66,6 @@ class ArgumentError(Exception):
         self.command_class = command_class
         self.argument = argument
 
-    def say(self):
-        if self.say_message != '':
-            tts.say(self.say_message)
-
     def log_critical_error(self):
         logging.critical(f"{self.__class__.__name__} in '{self.command_class}':Error_code={self.code}:{self.argument}:{self.message}.")
 
@@ -85,13 +73,8 @@ class ArgumentError(Exception):
         self.say()
         self.log_critical_error()
 
-    def __str__(self):
-        return self.message
-
-    def __repr__(self):
-        return self.message
     
-class ExecCliCommandError(Exception):
+class ExecCliCommandError(SayException):
     def __init__(self, 
                  command_class='', 
                  code=30, 
@@ -106,10 +89,6 @@ class ExecCliCommandError(Exception):
         self.command = command
         self.output = output
 
-    def say(self):
-        if self.say_message != '':
-            tts.say(self.say_message)
-
     def log_critical_error(self):
         logging.critical(f"{self.__class__.__name__} in '{self.command_class}':Error_code={self.code}:STDOUT={self.output}:{self.command}:{self.message}.")
 
@@ -117,14 +96,9 @@ class ExecCliCommandError(Exception):
         self.say()
         self.log_critical_error()
 
-    def __str__(self):
-        return self.message
-
-    def __repr__(self):
-        return self.message
 
 
-class CommandAccessError(Exception):
+class CommandAccessError(SayException):
     def __init__(self, 
                  command_class='', 
                  code=40,
@@ -137,10 +111,6 @@ class CommandAccessError(Exception):
         self.command_class = command_class
         self.access_to = access_to
 
-    def say(self):
-        if self.say_message != '':
-            tts.say(self.say_message)
-
     def log_critical_error(self):
         logging.critical(f"{self.__class__.__name__} in '{self.command_class}' access to {self.access_to}:Error_code={self.code}:{self.message}.")
 
@@ -148,14 +118,9 @@ class CommandAccessError(Exception):
         self.say()
         self.log_critical_error()
 
-    def __str__(self):
-        return self.message
-
-    def __repr__(self):
-        return self.message
     
 
-class CommandSyntaxInYamlError(Exception):
+class CommandSyntaxInYamlError(SayException):
     def __init__(self, 
                  command_class='', 
                  code=50,
@@ -168,10 +133,6 @@ class CommandSyntaxInYamlError(Exception):
         self.command_class = command_class
         self.key = key
 
-    def say(self):
-        if self.say_message != '':
-            tts.say(self.say_message)
-
     def log_critical_error(self):
         logging.critical(f"{self.__class__.__name__} in '{self.command_class}' not exists {self.key}:Error_code={self.code}:{self.message}.")
 
@@ -179,14 +140,9 @@ class CommandSyntaxInYamlError(Exception):
         self.say()
         self.log_critical_error()
 
-    def __str__(self):
-        return self.message
-
-    def __repr__(self):
-        return self.message
 
 
-class WikipediaNotFoundError(Exception):
+class WikipediaNotFoundError(SayException):
     def __init__(self, 
                  command_class='', 
                  code=100,
@@ -199,10 +155,6 @@ class WikipediaNotFoundError(Exception):
         self.command_class = command_class
         self.search_for = search_for
 
-    def say(self):
-        if self.say_message != '':
-            tts.say(self.say_message)
-
     def log_warning(self):
         logging.warning(f"{self.__class__.__name__} in '{self.command_class}' search for {self.search_for}:Error_code={self.code}:{self.message}.")
 
@@ -210,14 +162,9 @@ class WikipediaNotFoundError(Exception):
         self.say()
         self.log_warning()
 
-    def __str__(self):
-        return self.message
-
-    def __repr__(self):
-        return self.message
     
 
-class WikipediaApiError(Exception):
+class WikipediaApiError(SayException):
     def __init__(self, 
                  command_class='', 
                  code=110,
@@ -230,10 +177,6 @@ class WikipediaApiError(Exception):
         self.command_class = command_class
         self.search_for = search_for
 
-    def say(self):
-        if self.say_message != '':
-            tts.say(self.say_message)
-
     def log_warning(self):
         logging.warning(f"{self.__class__.__name__} in '{self.command_class}' search for {self.search_for}:Error_code={self.code}:{self.message}.")
 
@@ -241,13 +184,8 @@ class WikipediaApiError(Exception):
         self.say()
         self.log_warning()
 
-    def __str__(self):
-        return self.message
 
-    def __repr__(self):
-        return self.message
-
-class UnknownError(Exception):
+class UnknownError(SayException):
     def __init__(self, 
                  command_class='', 
                  code=120,
@@ -258,10 +196,6 @@ class UnknownError(Exception):
         self.say_message = say_message
         self.command_class = command_class
 
-    def say(self):
-        if self.say_message != '':
-            tts.say(self.say_message)
-
     def log_critical_error(self):
         logging.critical(f"{self.__class__.__name__} in '{self.command_class}':Error_code={self.code}:{self.message}.")
 
@@ -269,8 +203,3 @@ class UnknownError(Exception):
         self.say()
         self.log_critical_error()
 
-    def __str__(self):
-        return self.message
-
-    def __repr__(self):
-        return self.message

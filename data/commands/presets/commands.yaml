@@ -1,5 +1,5 @@
 ---
-presets/test:
+presets/working:
   phrases:
     - "[preset] работа"
   phrase_var:
@@ -12,17 +12,13 @@ presets/test:
   command:
     - 1:
         command_type: openLink
-        link: www.youtube.com
+        link: https://music.yandex.ru/home
     - 2:
         command_type: openProgram
-        program: Notepad
+        program: Visual Studio Code
     - 3:
-        command_type: cmd
-        cmd_command: shutdown
-        cmd_args:
-          /s:
-          /t:
-          5000:
+        command_type: openProgram
+        program: Cmd
   speech_type: dynamic
   speech_list:
     - Рабочий режим включен

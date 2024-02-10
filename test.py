@@ -48,4 +48,23 @@
 # print(f"Current memory usage is {current / (1024*1024)}MB; Peak was {peak / (1024*1024)}MB")
 
 # tracemalloc.stop()
+# class Command:
+#     def method(self):
+#         print('приветика!!!')
+#     def print(self):
+#         self.method()
+#         print('привет')
+# class CommandProcessor(Command):
+#     def method(self):
+#         super().method()
+#         print('приветААА')
+#     def print(self):
+#         super().print()
 
+# proc = CommandProcessor()
+# proc.print()
+
+from fuzzywuzzy import fuzz as f 
+voice_input = "открой мне визжал студио код"
+ratio = f.token_sort_ratio(voice_input, "открой вижуал студио код")
+print(ratio)

@@ -65,18 +65,20 @@ programs/visual_studio_code:
   speech_list:
     - Visual Studio Code открыт
 
-programs/yandex_music:
+programs/cmd:
   phrases:
-    - открой [yandex_music]
-    - включи [yandex_music]
-    - запусти [yandex_music]
-    - "[yandex_music]"
+    - открой [cmd]
+    - включи [cmd]
+    - запусти [cmd]
+    - "[cmd]"
   phrase_var:
-    yandex_music:
-      - яндекс музыка
-      - музыку
+    cmd:
+      - цмд
+      - cmd
+      - консоль
+      - командная строка
   command_type: openProgram
-  program: Yandex Music
+  program: Cmd
   speech_type: dynamic
   speech_list:
-    - Яндекс Музыка открыт
+    - Консоль открыта

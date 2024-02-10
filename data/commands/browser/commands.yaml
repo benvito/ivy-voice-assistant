@@ -36,3 +36,22 @@ browser/open_telegram: # non-system
   speech_type: dynamic
   speech_list:
     - Телеграам открыт
+
+browser/open_music: # non-system
+  phrases:
+    - открой [ym]
+    - включи [ym]
+    - открой в браузере [ym]
+    - запусти [ym]
+    - "[ym]"
+  phrase_var:
+    ym:
+      - яндекс музыка
+      - музыка
+      - яндекс музыку
+      - музыку
+  command_type: openLink
+  link: https://music.yandex.ru/home
+  speech_type: dynamic
+  speech_list:
+    - Телеграам открыт
