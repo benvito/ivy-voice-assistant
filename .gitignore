@@ -1,3 +1,6 @@
 __pycache__
 venv
 /models/vosk/
+dist
+build
+*.spec
