@@ -14,17 +14,10 @@ TODO:
     - static speech
     - time_format_for_string занимает очень много времени
     - обязательность аргумента regex
+IDEAS FOR UPGRADE:
+    - Открой ютуб, аргументы: ютуб(в виде регекса)=http::/youtube.com
+    - random_numbers аргумент до числа
     -   necessary_phrases:
             *half
         exclude_phrases:
             *int (или че то такое, значит любое число)
-IDEAS FOR UPGRADE:
-    - Открой ютуб, аргументы: ютуб(в виде регекса)=http::/youtube.com
-    - phrases:
-        !youtube=[ютуб|yotube|видосики]
-        - открой [youtube]
-        - включи [youtube]
-        - открой в браузере [youtube]
-        - запусти [youtube]
-        - [youtube]
-    - random_numbers аргумент до числа
