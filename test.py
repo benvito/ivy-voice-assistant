@@ -69,7 +69,22 @@
 # ratio = f.token_sort_ratio(voice_input, "открой вижуал студио код")
 # print(ratio)
 
-import os
+# import os
  
-current_file = os.path.realpath(__file__)
-print(current_file)
+# current_file = os.path.realpath(__file__)
+# print(current_file)
+
+
+class One():
+    def method(self, a):
+        print(a)
+
+class Button():
+    def printing(self, func):
+        func("привет")
+
+def printtt(a):
+    print(a)
+
+two = Button()
+two.printing(printtt)
