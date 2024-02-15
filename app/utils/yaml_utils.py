@@ -44,3 +44,12 @@ class YamlData:
     def load_all_commands_classes() -> list:
         commands = YamlData.load_all_commands_dict()
         return commands.keys()
+    
+    @staticmethod
+    @exec_timer
+    def load_all_commands_folders() -> list:
+        commands_folders = dict()
+        for dirName, subdirList, fileList in os.walk(os.path.join(BASE_DIR, 'data', 'commands')):
+            if "commands.yaml" in fileList:
+                commands_folders[dirName.split(os.sep)[-1]] = dirName
+        return commands_folders

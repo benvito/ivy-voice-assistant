@@ -1,4 +1,5 @@
 import flet as ft
+from theme import *
 
 class AppTitleBar(ft.Row):
     def __init__(self, page : ft.Page, *args, **kwargs) -> None:
@@ -8,7 +9,7 @@ class AppTitleBar(ft.Row):
         self.title_color = "#1D1E21"
         self.title_height = 32
         self.luna_text = "LUNA V1.0"
-        self.luna_text_size = 18
+        self.luna_text_size = TextSize.XS
         self.title_buttons_scale = 0.6
         self.opacity_elements = 0.5
         self.opacity_hover_button = 0.03

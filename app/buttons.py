@@ -1,9 +1,59 @@
 import flet as ft
+from enum import auto
+from layouts import FramesRow
+
+class ButtonStyle(auto):
+    NO_BORDER_BG = ft.ButtonStyle(
+            elevation=0,
+            bgcolor=ft.colors.with_opacity(0, '#ffffff'),
+            overlay_color=ft.colors.with_opacity(0, "#222428"),
+            shape=ft.RoundedRectangleBorder(radius=6),
+            padding=0
+        )
+
+    SELECTED_BUTTON = ft.ButtonStyle(
+        bgcolor="#4D678A",
+        overlay_color=ft.colors.with_opacity(0, "#222428"),
+        shape=ft.RoundedRectangleBorder(radius=6),
+        padding=2
+    )
 
 
 class ClassicButton(ft.ElevatedButton):
-    def __init__(self):
-        pass
+    def __init__(self,
+                 text : ft.Text = None,
+                 img : ft.Image = None,
+                 height : int = 40,
+                 bgcolor : str = "#2B2E33",
+                 margin : int = None,
+                 alignment : ft.alignment = ft.alignment.center_left,
+                 border_radius : int = 30,
+                 animation_scale : ft.Animation = ft.Animation(100, ft.AnimationCurve.EASE_IN_OUT),
+                 *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.button_container = ft.Container(
+            ft.Container(
+                FramesRow(
+                    [
+                        img,
+                        text
+                    ],
+                    alignment=ft.MainAxisAlignment.START,
+                    vertical_alignment=ft.CrossAxisAlignment.CENTER,
+                    spacing=10
+                ),
+                margin=ft.margin.only(left=20),
+            ),
+            height=height,
+            bgcolor=bgcolor,
+            alignment=alignment,
+            border_radius=border_radius,
+            margin=margin,
+            animate_scale=animation_scale
+        )
+        self.content = self.button_container
+        self.style = ButtonStyle.NO_BORDER_BG
+        
 
 class SideBarButton(ft.ElevatedButton):
     def __init__(self, 
@@ -23,12 +73,7 @@ class SideBarButton(ft.ElevatedButton):
         self.button_bg_padding = bg_padding
         self.img = img
         self.scale_button = scale
-        self.rail_button_style = ft.ButtonStyle(
-            elevation=0,
-            bgcolor=ft.colors.with_opacity(0, '#ffffff'),
-            overlay_color=ft.colors.with_opacity(0, "#222428"),
-            shape=ft.RoundedRectangleBorder(radius=6),
-        )
+        self.rail_button_style = ButtonStyle.NO_BORDER_BG
 
         self.button_img = ft.Image(
             src=self.img,

@@ -5,11 +5,13 @@ import asyncio
 from equalizer import Equalizer
 from background import Background
 from title_bar import AppTitleBar
-from buttons import SideBarButton     
+from buttons import SideBarButton, ClassicButton
 from side_bar import SideBar   
 from main_page import MainPage
 from frames import Frame
-from layouts import PageContainer, FramesRow
+from layouts import PageContainer, FramesRow, CenterContainer, ItemsColumn
+from theme import *
+from editor_page import EditorPage
 
 async def main(page: ft.Page):
     page.title = "Luna"
@@ -59,13 +61,9 @@ async def main(page: ft.Page):
             )
             await app.update_async()
         elif e.route == "/editor":
-            app.controls[cur_page] = ft.Container(
-                ft.Text("editor"),
-                expand=True,
-                bgcolor="red",
-                alignment=ft.alignment.center
-            )
+            app.controls[cur_page] = editor_page
             await page.update_async()
+        await resize(None)
 
             
 
@@ -85,11 +83,12 @@ async def main(page: ft.Page):
     page.on_resize = resize
     
     page.fonts = {
-        "Jura" : "fonts/Jura.ttf"
+        "Jura" : "fonts/Jura.ttf",
     }
 
     page.theme = ft.Theme(
-        font_family="Jura"
+        font_family="Jura",
+        scrollbar_theme=ScrollBarTheme.DEFAULT
     )
 
     page.bgcolor="black"
@@ -97,18 +96,18 @@ async def main(page: ft.Page):
     title = AppTitleBar(page=page)
 
     home_button = SideBarButton(img='nav_rail/HOME_nav_rail.png',
-                                scale=2.8,
-                                bg_padding=28,
+                                scale=1,
+                                bg_padding=10,
                                 button_on_click=go_home)
 
     options_button = SideBarButton(img='nav_rail/OPTIONS_nav_rail.png',
-                                    scale=2.8,
-                                    bg_padding=28,
+                                    scale=1,
+                                    bg_padding=10,
                                     button_on_click=go_options)
 
     editor_button = SideBarButton(img='nav_rail/EDITOR_nav_rail.png',
-                                scale=2.8,
-                                bg_padding=28,
+                                scale=1,
+                                bg_padding=10,
                                 button_on_click=go_editor)
     
     logo = "nav_rail/logo128_nav_rail.png"
@@ -140,21 +139,11 @@ async def main(page: ft.Page):
     backgroud = Background(ft.RadialGradient(colors=["#393D44", "#2B2E33"], radius=0.8))
     cur_page = 1
 
+    editor_page = EditorPage()
     app = ft.Stack(
             [
                 backgroud,
-                PageContainer(FramesRow([
-                    Frame(
-                        ft.Container(
-                            width=470,
-                            height=40,
-                            bgcolor=ft.colors.RED_200
-                        ),
-                          expand=2,
-                          padding=ft.padding.symmetric(vertical=20),
-                          alignment=ft.alignment.top_center
-                          ),
-                    Frame(expand=5)])),
+                editor_page,
                 navigation_rail,
                 title,
             ],
