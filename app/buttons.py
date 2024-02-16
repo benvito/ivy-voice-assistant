@@ -1,55 +1,78 @@
 import flet as ft
 from enum import auto
 from layouts import FramesRow
+from theme import ColorTheme
 
 class ButtonStyle(auto):
     NO_BORDER_BG = ft.ButtonStyle(
             elevation=0,
-            bgcolor=ft.colors.with_opacity(0, '#ffffff'),
-            overlay_color=ft.colors.with_opacity(0, "#222428"),
+            bgcolor=ft.colors.with_opacity(0, ft.colors.ON_TERTIARY),
+            overlay_color=ft.colors.with_opacity(0, ft.colors.TERTIARY),
             shape=ft.RoundedRectangleBorder(radius=6),
             padding=0
         )
 
     SELECTED_BUTTON = ft.ButtonStyle(
-        bgcolor="#4D678A",
-        overlay_color=ft.colors.with_opacity(0, "#222428"),
+        bgcolor=ft.colors.SECONDARY,
+        overlay_color=ft.colors.with_opacity(0, ft.colors.TERTIARY),
         shape=ft.RoundedRectangleBorder(radius=6),
         padding=2
     )
+
+
+class ContentButton(ft.ElevatedButton):
+    def __init__(self,
+                 content : ft.Control = None,
+                 border_radius : ft.border_radius = ft.border_radius.all(30),
+                 bgcolor : str = None,
+                 animation_scale : ft.Animation = ft.Animation(100, ft.AnimationCurve.EASE_IN_OUT),
+                 *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.content = ft.Container(
+            content,
+            bgcolor=bgcolor,
+            border_radius=border_radius,
+            animate_scale=animation_scale
+        )
+
+        self.style = ButtonStyle.NO_BORDER_BG
 
 
 class ClassicButton(ft.ElevatedButton):
     def __init__(self,
                  text : ft.Text = None,
                  img : ft.Image = None,
-                 height : int = 40,
-                 bgcolor : str = "#2B2E33",
+                 content : ft.Control = None,
+                 scale : float = 1,
+                 height : int = None,
+                 bgcolor : str = ft.colors.PRIMARY_CONTAINER,
                  margin : int = None,
                  alignment : ft.alignment = ft.alignment.center_left,
-                 border_radius : int = 30,
+                 border_radius : ft.border_radius = ft.border_radius.all(30),
+                 items_alignment : ft.MainAxisAlignment = ft.MainAxisAlignment.START,
+                 items_vertical_alignment : ft.CrossAxisAlignment = ft.CrossAxisAlignment.CENTER,
                  animation_scale : ft.Animation = ft.Animation(100, ft.AnimationCurve.EASE_IN_OUT),
                  *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.button_items = [img, text, content]
+        self.button_items = [x for x in self.button_items if x is not None]
         self.button_container = ft.Container(
             ft.Container(
                 FramesRow(
-                    [
-                        img,
-                        text
-                    ],
-                    alignment=ft.MainAxisAlignment.START,
-                    vertical_alignment=ft.CrossAxisAlignment.CENTER,
+                    self.button_items,
+                    alignment=items_alignment,
+                    vertical_alignment=items_vertical_alignment,
                     spacing=10
                 ),
-                margin=ft.margin.only(left=20),
+                margin=ft.margin.only(left=20 if len(self.button_items) > 1 else 0),
             ),
             height=height,
             bgcolor=bgcolor,
             alignment=alignment,
             border_radius=border_radius,
             margin=margin,
-            animate_scale=animation_scale
+            animate_scale=animation_scale,
+            scale=scale
         )
         self.content = self.button_container
         self.style = ButtonStyle.NO_BORDER_BG
@@ -63,7 +86,7 @@ class SideBarButton(ft.ElevatedButton):
                  button_on_click : callable = None,
                  scale_hover : float = 0.9,
                  opacity_scale : float = 0.75,
-                 color : str = None,
+                 color : str = ft.colors.ON_TERTIARY_CONTAINER,
                  *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.color_button = color

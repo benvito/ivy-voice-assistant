@@ -53,3 +53,11 @@ class YamlData:
             if "commands.yaml" in fileList:
                 commands_folders[dirName.split(os.sep)[-1]] = dirName
         return commands_folders
+
+    @staticmethod
+    @exec_timer
+    def load_all_command_subfolders(path : str) -> list:
+        subfolders = None
+        for dirName, subdirList, fileList in os.walk(path):
+            if "commands.yaml" in fileList:
+                return subdirList

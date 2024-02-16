@@ -1,5 +1,14 @@
 import flet as ft
 
+class SwitchableWindow(ft.UserControl):
+    def __init__(self, window, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+        self.is_active = False
+        self.window = window
+    
+    def build(self):
+        return self.window
+
 class Frame(ft.Container):
     def __init__(self,
                  content : ft.Control = None,

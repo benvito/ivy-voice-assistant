@@ -88,7 +88,8 @@ async def main(page: ft.Page):
 
     page.theme = ft.Theme(
         font_family="Jura",
-        scrollbar_theme=ScrollBarTheme.DEFAULT
+        scrollbar_theme=ScrollBarTheme.DEFAULT,
+        color_scheme=ColorTheme.DEFAULT
     )
 
     page.bgcolor="black"
@@ -120,10 +121,10 @@ async def main(page: ft.Page):
                             begin=ft.alignment.center_left,
                             end=ft.alignment.center_right,
                             colors=[
-                                "#587398",
-                                "#78A2DB",
-                                "#82AADF",
-                                "#9FC8FF",
+                                ft.colors.SECONDARY_CONTAINER,
+                                ft.colors.ON_SURFACE_VARIANT,
+                                ft.colors.SURFACE_TINT,
+                                ft.colors.SURFACE,
                             ],
                             tile_mode=ft.GradientTileMode.MIRROR),
                         equalizer_class=Equalizer(equalizer_bars_count=12,
@@ -134,9 +135,9 @@ async def main(page: ft.Page):
                                     equalizer_spacing_bars=10,
                                     equalizer_speed_dance=0.015,
                                     equalizer_bars_animation=ft.Animation(125, ft.AnimationCurve.FAST_OUT_SLOWIN),
-                                    equalizer_color="#A7C1E2"))
+                                    equalizer_color=ft.colors.SURFACE))
     
-    backgroud = Background(ft.RadialGradient(colors=["#393D44", "#2B2E33"], radius=0.8))
+    backgroud = Background(ft.RadialGradient(colors=[ft.colors.ON_BACKGROUND, ft.colors.BACKGROUND], radius=0.8))
     cur_page = 1
 
     editor_page = EditorPage()

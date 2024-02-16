@@ -15,7 +15,7 @@ class Equalizer(ft.UserControl):
                  equalizer_spacing_bars=10,
                  equalizer_speed_dance=0.0155,
                  equalizer_bars_animation=ft.Animation(125, ft.AnimationCurve.EASE_IN_OUT),
-                 equalizer_color="#A7C1E2") -> None:
+                 equalizer_color=ft.colors.SURFACE) -> None:
         super().__init__()
         self.equalizer_strength = equalizer_strength
         

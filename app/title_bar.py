@@ -6,7 +6,7 @@ class AppTitleBar(ft.Row):
         super().__init__(*args, **kwargs)
         self.page = page
         self.title_margin = 6
-        self.title_color = "#1D1E21"
+        self.title_color = ft.colors.OUTLINE_VARIANT
         self.title_height = 32
         self.luna_text = "LUNA V1.0"
         self.luna_text_size = TextSize.XS
@@ -46,11 +46,11 @@ class AppTitleBar(ft.Row):
             icon_size=20,
             style=ft.ButtonStyle(
                 color={
-                    ft.MaterialState.HOVERED: ft.colors.with_opacity(self.opacity_elements, '#ffffff'),
-                    ft.MaterialState.FOCUSED: ft.colors.with_opacity(self.opacity_elements, '#ffffff'),
-                    ft.MaterialState.DEFAULT: ft.colors.with_opacity(self.opacity_elements, '#ffffff'),
+                    ft.MaterialState.HOVERED: ft.colors.with_opacity(self.opacity_elements, ft.colors.ON_PRIMARY),
+                    ft.MaterialState.FOCUSED: ft.colors.with_opacity(self.opacity_elements, ft.colors.ON_PRIMARY),
+                    ft.MaterialState.DEFAULT: ft.colors.with_opacity(self.opacity_elements, ft.colors.ON_PRIMARY),
                 },
-                overlay_color=ft.colors.with_opacity(self.opacity_hover_button, '#ffffff')
+                overlay_color=ft.colors.with_opacity(self.opacity_hover_button, ft.colors.ON_PRIMARY)
             )
         )
 
@@ -66,17 +66,17 @@ class AppTitleBar(ft.Row):
             icon_size=20,
             style=ft.ButtonStyle(
                 color={
-                    ft.MaterialState.HOVERED: ft.colors.with_opacity(self.opacity_elements, '#ffffff'),
-                    ft.MaterialState.FOCUSED: ft.colors.with_opacity(self.opacity_elements, '#ffffff'),
-                    ft.MaterialState.DEFAULT: ft.colors.with_opacity(self.opacity_elements, '#ffffff'),
+                    ft.MaterialState.HOVERED: ft.colors.with_opacity(self.opacity_elements, ft.colors.ON_PRIMARY),
+                    ft.MaterialState.FOCUSED: ft.colors.with_opacity(self.opacity_elements, ft.colors.ON_PRIMARY),
+                    ft.MaterialState.DEFAULT: ft.colors.with_opacity(self.opacity_elements, ft.colors.ON_PRIMARY),
                 },
-                overlay_color=ft.colors.with_opacity(self.opacity_hover_button, '#ffffff')
+                overlay_color=ft.colors.with_opacity(self.opacity_hover_button, ft.colors.ON_PRIMARY)
             )
         )
 
         ### LUNA TITLE ###
         self.luna_version_text = ft.Container(
-            ft.Text(self.luna_text, color=ft.colors.with_opacity(self.opacity_elements, '#ffffff'), size=self.luna_text_size),
+            ft.Text(self.luna_text, color=ft.colors.with_opacity(self.opacity_elements, ft.colors.ON_PRIMARY), size=self.luna_text_size),
             alignment=ft.alignment.center_left
         )
 

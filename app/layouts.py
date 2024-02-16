@@ -29,6 +29,21 @@ class ItemsColumn(ft.Column):
         self.spacing = spacing
         self.scroll = scroll
 
+class ItemsRow(ft.Row):
+    def __init__(self,
+                 controls : list = None,
+                 alignment : ft.MainAxisAlignment = ft.MainAxisAlignment.START,
+                 vertical_alignment : ft.CrossAxisAlignment = ft.CrossAxisAlignment.START,
+                 spacing : int = 11,
+                 scroll : ft.ScrollMode = None,
+                *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+        self.controls = controls
+        self.alignment = alignment
+        self.vertical_alignment = vertical_alignment
+        self.spacing = spacing
+        self.scroll = scroll
+
 class FramesRow(ft.Row):
     def __init__(self,
                  controls : list = None,

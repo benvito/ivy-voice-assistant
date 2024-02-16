@@ -6,7 +6,7 @@ class SideBar(ft.UserControl):
     def __init__(self,
                  buttons : list,
                  logo : str = None,
-                 rail_color : str = ft.colors.with_opacity(1, '#222428'),
+                 rail_color : str = ft.colors.with_opacity(1, ft.colors.TERTIARY),
                  rail_width : int = 72,
                  rail_margin_top : int = 35,
                  rail_margin_bottom : int = 15,
