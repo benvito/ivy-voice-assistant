@@ -8,7 +8,9 @@ class CenterContainer(ft.Container):
                  expand : bool = False,
                  margin : ft.margin = ft.margin.all(20),
                 *args, **kwargs) -> None:
+        
         super().__init__(*args, **kwargs)
+
         self.content = content
         self.expand = expand
         self.margin = margin
@@ -22,7 +24,9 @@ class ItemsColumn(ft.Column):
                  spacing : int = 11,
                  scroll : ft.ScrollMode = None,
                 *args, **kwargs) -> None:
+        
         super().__init__(*args, **kwargs)
+        
         self.controls = controls
         self.alignment = alignment
         self.horizontal_alignment = horizontal_alignment

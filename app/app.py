@@ -140,7 +140,7 @@ async def main(page: ft.Page):
     backgroud = Background(ft.RadialGradient(colors=[ft.colors.ON_BACKGROUND, ft.colors.BACKGROUND], radius=0.8))
     cur_page = 1
 
-    editor_page = EditorPage()
+    editor_page = EditorPage(page=page)
     app = ft.Stack(
             [
                 backgroud,

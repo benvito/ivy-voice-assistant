@@ -52,5 +52,10 @@ class ColorTheme(auto):
         surface="#A7C1E2",
         surface_tint="#82AADF",
         on_surface="#ffffff",
-        on_surface_variant="#78A2DB"
+        on_surface_variant="#78A2DB",
+
+        error="#795151",
+        on_error="#ffffff",
+
+        surface_variant="#517968"
     )

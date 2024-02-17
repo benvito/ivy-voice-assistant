@@ -47,7 +47,7 @@ class YamlData:
     
     @staticmethod
     @exec_timer
-    def load_all_commands_folders() -> list:
+    def load_all_commands_folders() -> dict:
         commands_folders = dict()
         for dirName, subdirList, fileList in os.walk(os.path.join(BASE_DIR, 'data', 'commands')):
             if "commands.yaml" in fileList:
@@ -61,3 +61,11 @@ class YamlData:
         for dirName, subdirList, fileList in os.walk(path):
             if "commands.yaml" in fileList:
                 return subdirList
+            
+    @staticmethod
+    @exec_timer
+    def create_command_folder(command_folder_name : str):
+        path_to_command = os.path.join(BASE_DIR, 'data', 'commands', command_folder_name)
+        os.mkdir(path_to_command)
+        file_descriptor = os.open(os.path.join(path_to_command, 'commands.yaml'), os.O_CREAT | os.O_WRONLY)
+        os.close(file_descriptor)
