@@ -2,8 +2,9 @@ import flet as ft
 from equalizer import Equalizer
 
 class MainPage(ft.UserControl):
-    def __init__(self, luna_img : str, luna_color : ft.LinearGradient, equalizer_class : Equalizer) -> None:  
+    def __init__(self, luna_img : str, luna_color : ft.LinearGradient, equalizer_class : Equalizer, page : ft.Page = None) -> None:  
         super().__init__()
+        self.page = page
         self.luna_img = luna_img
         self.luna_color = luna_color
 
@@ -51,6 +52,12 @@ class MainPage(ft.UserControl):
             await self.equalizer_class.equlizer_dance.start()
         elif e.data == "false":
             await self.equalizer_class.equlizer_dance.stop()
+
+    def on_window_event_handler(self, e):
+        pass
+
+    def on_keyboard_event_handler(self, e):
+        pass
 
     def build(self):
         return ft.Container(

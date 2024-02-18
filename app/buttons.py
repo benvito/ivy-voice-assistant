@@ -51,6 +51,9 @@ class ClassicButton(ft.ElevatedButton):
                  text : ft.Text = None,
                  img : ft.Image = None,
                  content : ft.Control = None,
+                 extra_content : ft.Control = None,
+                 extra_content_alignment : ft.MainAxisAlignment = ft.MainAxisAlignment.SPACE_BETWEEN,
+                 extra_vertical_alignment : ft.CrossAxisAlignment = ft.CrossAxisAlignment.CENTER,
                  scale : float = 1,
                  height : int = None,
                  bgcolor : str = ft.colors.PRIMARY_CONTAINER,
@@ -61,25 +64,45 @@ class ClassicButton(ft.ElevatedButton):
                  items_vertical_alignment : ft.CrossAxisAlignment = ft.CrossAxisAlignment.CENTER,
                  animation_scale : ft.Animation = ft.Animation(100, ft.AnimationCurve.EASE_IN_OUT),
                  hover_style : str = "shadow",
+                 expand : int = None,
                  *args, **kwargs):
         
         super().__init__(*args, **kwargs)
         
         self.button_items = [img, text, content]
         self.button_items = [x for x in self.button_items if x is not None]
+        self.extra_content = extra_content
         self.button_color = bgcolor
         self.hover_style = hover_style
+
+        self.items = FramesRow(
+                        self.button_items,
+                        alignment=items_alignment,
+                        vertical_alignment=items_vertical_alignment,
+                        spacing=10)
+
+        self.buttons_container_items = FramesRow(
+                    [
+                        self.items,
+                        ft.Container(
+                            self.extra_content,
+                        ) 
+                    ],
+                    spacing=0,
+                    alignment=extra_content_alignment,
+                    vertical_alignment=extra_vertical_alignment
+                )
+        
+        if self.extra_content is None:
+            self.buttons_container_items.controls = [self.items]
+            self.buttons_container_items.alignment = items_alignment
+            self.buttons_container_items.vertical_alignment = items_vertical_alignment
         
         self.button_container = ft.Container(
 
             ft.Container(
 
-                FramesRow(
-                    self.button_items,
-                    alignment=items_alignment,
-                    vertical_alignment=items_vertical_alignment,
-                    spacing=10
-                ),
+                self.buttons_container_items,
 
                 margin=ft.margin.only(left=20 if len(self.button_items) > 1 else 0),
             ),
@@ -98,6 +121,11 @@ class ClassicButton(ft.ElevatedButton):
         self.content = self.button_container
         self.style = ButtonStyle.NO_BORDER_BG
         self.on_hover = self.on_hover_button
+        self.expand = expand
+
+        self.background_color = self.button_color
+        self.border_radius_smooth = border_radius
+        self.scaling = scale
 
         self._is_secected = False
 
@@ -124,6 +152,29 @@ class ClassicButton(ft.ElevatedButton):
         self._is_secected = value
         self.on_change_secected()
 
+    @property
+    def background_color(self):
+        return self.content.bgcolor
+    
+    @background_color.setter
+    def background_color(self, value):
+        self.content.bgcolor = value
+
+    @property
+    def border_radius_smooth(self):
+        return self.content.border_radius
+    
+    @border_radius_smooth.setter
+    def border_radius_smooth(self, value):
+        self.content.border_radius = value
+
+    @property
+    def scaling(self):
+        return self.content.scale
+    
+    @scaling.setter
+    def scaling(self, value):
+        self.content.scale = value
         
         
 

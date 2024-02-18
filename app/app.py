@@ -12,6 +12,8 @@ from frames import Frame
 from layouts import PageContainer, FramesRow, CenterContainer, ItemsColumn
 from theme import *
 from editor_page import EditorPage
+from options_page import OptionsPage
+from routing import Routes
 
 async def main(page: ft.Page):
     page.title = "Luna"
@@ -38,45 +40,48 @@ async def main(page: ft.Page):
         page.window_height = page.window_height
         page.window_width = page.window_width
         print(page.window_width, page.window_height)
-        if page.route == "/":
+        if page.route == Routes.MAIN_PAGE:
             print("main page")
             main_page.center_items.scale = (page.window_width + page.window_height) / (page.window_max_width + page.window_max_height)
             await main_page.update_async()
-        elif page.route == "/options":
+        elif page.route == Routes.OPTIONS_PAGE:
             print("options")
-        elif page.route == "/editor":
+        elif page.route == Routes.EDITOR_PAGE:
             print("editor")
+    
+    async def on_window_event_handler(e):
+        pass
+
+    async def on_keyboard_event_handler(e):
+        pass
+
+    page.on_window_event = on_window_event_handler
+    page.on_keyboard_event = on_keyboard_event_handler
 
     async def route_change(e : ft.RouteChangeEvent):
         print(e.route)
-        if e.route == "/":
+        if e.route == Routes.MAIN_PAGE:
             app.controls[cur_page] = main_page
             await app.update_async()
-        elif e.route == "/options":
-            app.controls[cur_page] = ft.Container(
-                ft.Text("options"),
-                expand=True,
-                bgcolor="red",
-                alignment=ft.alignment.center
-            )
+        elif e.route == Routes.OPTIONS_PAGE:
+            app.controls[cur_page] = options_page
             await app.update_async()
-        elif e.route == "/editor":
+        elif e.route == Routes.EDITOR_PAGE:
             app.controls[cur_page] = editor_page
             await page.update_async()
         await resize(None)
 
-            
 
     async def go_home(e):
-        page.route = "/"
+        page.route = Routes.MAIN_PAGE
         await page.update_async()
 
     async def go_options(e):
-        page.route = "/options"
+        page.route = Routes.OPTIONS_PAGE
         await page.update_async()
 
     async def go_editor(e):
-        page.route = "/editor"
+        page.route = Routes.EDITOR_PAGE
         await page.update_async()
 
 
@@ -94,6 +99,7 @@ async def main(page: ft.Page):
 
     page.bgcolor="black"
     page.on_route_change = route_change
+
     title = AppTitleBar(page=page)
 
     home_button = SideBarButton(img='nav_rail/HOME_nav_rail.png',
@@ -135,16 +141,18 @@ async def main(page: ft.Page):
                                     equalizer_spacing_bars=10,
                                     equalizer_speed_dance=0.015,
                                     equalizer_bars_animation=ft.Animation(125, ft.AnimationCurve.FAST_OUT_SLOWIN),
-                                    equalizer_color=ft.colors.SURFACE))
+                                    equalizer_color=ft.colors.SURFACE),
+                        page=page)
     
     backgroud = Background(ft.RadialGradient(colors=[ft.colors.ON_BACKGROUND, ft.colors.BACKGROUND], radius=0.8))
     cur_page = 1
-
+    page.route = "/options"
     editor_page = EditorPage(page=page)
+    options_page = OptionsPage(page=page)
     app = ft.Stack(
             [
                 backgroud,
-                editor_page,
+                main_page,
                 navigation_rail,
                 title,
             ],

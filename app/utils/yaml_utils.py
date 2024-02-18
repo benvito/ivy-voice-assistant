@@ -1,5 +1,6 @@
 import yaml
 import os
+import shutil
 
 from config.config import PATH
 from utils.decorators import exec_timer
@@ -69,3 +70,10 @@ class YamlData:
         os.mkdir(path_to_command)
         file_descriptor = os.open(os.path.join(path_to_command, 'commands.yaml'), os.O_CREAT | os.O_WRONLY)
         os.close(file_descriptor)
+
+    @staticmethod
+    @exec_timer
+    def delete_command_folder(command_folder_name : str):
+        print(command_folder_name)
+        path_to_command = os.path.join(BASE_DIR, 'data', 'commands', command_folder_name)
+        shutil.rmtree(path_to_command)
