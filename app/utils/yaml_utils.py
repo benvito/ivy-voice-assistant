@@ -77,3 +77,21 @@ class YamlData:
         print(command_folder_name)
         path_to_command = os.path.join(BASE_DIR, 'data', 'commands', command_folder_name)
         shutil.rmtree(path_to_command)
+
+    @staticmethod
+    @exec_timer
+    def read_file(file_path : str) -> dict:
+        with open(os.path.join(BASE_DIR, file_path), 'r', encoding="utf-8") as file:
+            return yaml.safe_load(file)
+        
+    @staticmethod
+    @exec_timer
+    def read_config() -> dict:
+        with open(os.path.join(BASE_DIR, "app", "config", "config.yaml"), 'r', encoding="utf-8") as file:
+            return yaml.safe_load(file)
+        
+    @staticmethod
+    @exec_timer
+    def write_config(config : dict):
+        with open(os.path.join(BASE_DIR, "app", "config", "config.yaml"), 'w', encoding="utf-8") as file:
+            yaml.dump(config, file)

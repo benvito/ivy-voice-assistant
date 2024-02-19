@@ -43,6 +43,11 @@ PROGRAM = "program"
 PATH = "path"
 HYBRID = "hybrid"
 COMMAND = "command"
+IO_DEVICES = "io_devices"
+INPUT_DEVICE = "input_device"
+OUTPUT_DEVICE = "output_device"
+NAME = "name"
+INDEX = "index"
 
 ### MACROS ###
 IMG_MACRO = "img_macro"

@@ -27,6 +27,13 @@ class ButtonStyle(auto):
         }
     )
 
+    MENU_ITEM_BUTTON = ft.ButtonStyle(
+        bgcolor={
+            ft.MaterialState.DEFAULT : ft.colors.WHITE,
+            ft.MaterialState.HOVERED : ft.colors.GREEN,
+        },
+    )
+
 
 class ContentButton(ft.ElevatedButton):
     def __init__(self,
@@ -65,10 +72,11 @@ class ClassicButton(ft.ElevatedButton):
                  animation_scale : ft.Animation = ft.Animation(100, ft.AnimationCurve.EASE_IN_OUT),
                  hover_style : str = "shadow",
                  expand : int = None,
+                 reverse_items : bool = False,
                  *args, **kwargs):
         
         super().__init__(*args, **kwargs)
-        
+
         self.button_items = [img, text, content]
         self.button_items = [x for x in self.button_items if x is not None]
         self.extra_content = extra_content

@@ -141,7 +141,7 @@ async def main(page: ft.Page):
                                     equalizer_spacing_bars=10,
                                     equalizer_speed_dance=0.015,
                                     equalizer_bars_animation=ft.Animation(125, ft.AnimationCurve.FAST_OUT_SLOWIN),
-                                    equalizer_color=ft.colors.SURFACE),
+                                    equalizer_color=ft.colors.SCRIM),
                         page=page)
     
     backgroud = Background(ft.RadialGradient(colors=[ft.colors.ON_BACKGROUND, ft.colors.BACKGROUND], radius=0.8))
@@ -158,7 +158,7 @@ async def main(page: ft.Page):
             ],
             expand=True
         )
-
+    
     await page.add_async(
         app
     )

@@ -48,8 +48,9 @@ class ColorTheme(auto):
 
         outline="#222428",
         outline_variant="#1D1E21",
-        
-        surface="#A7C1E2",
+
+        scrim="#A7C1E2",
+        surface="#222428",
         surface_tint="#82AADF",
         on_surface="#ffffff",
         on_surface_variant="#78A2DB",

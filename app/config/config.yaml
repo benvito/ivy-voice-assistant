@@ -1,0 +1,7 @@
+io_devices:
+  input_device:
+    index: 29
+    name: "\u041C\u0438\u043A\u0440\u043E\u0444\u043E\u043D (DroidCam Virtual Audio)"
+  output_device:
+    index: -1
+    name: Default
