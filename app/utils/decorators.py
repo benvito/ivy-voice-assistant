@@ -1,6 +1,6 @@
 import time
 
-from config.config import SECOND_TO_NANO
+from config.constants import SECOND_TO_NANO
 
 def exec_timer(function_execution):
     def wrapper(*args):

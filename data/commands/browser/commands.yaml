@@ -31,6 +31,8 @@ browser/open_telegram: # non-system
       - телеграм
       - телега
       - телегу
+      - telegram
+      - tg
   command_type: openLink
   link: https://web.telegram.org/
   speech_type: dynamic

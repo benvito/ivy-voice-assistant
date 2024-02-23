@@ -11,11 +11,11 @@ from pprint import pprint
 import threading
 from abc import abstractmethod
 
-from config.config import *
+from config.constants import *
 from errors.errors import *
 from utils.yaml_utils import YamlData
 from utils.utils import Time, WordNum, StringProcessing
-from utils import BASE_DIR
+from config import BASE_DIR
 from commands.img_macro import IMacro
 from commands.arguments_process import ArgumentsProcessor
 
@@ -135,6 +135,26 @@ class CommandProcessor:
                 phrase += str(command_output)
                 
         return phrase
+    
+    @staticmethod
+    def unknown_command() -> str:
+        try:
+            command = YamlData.read_file(os.path.join(BASE_DIR, 'data', 'commands', 'unknown_command.yaml'))
+        except FileNotFoundError as e:
+            raise FileNotExists(path=os.path.join(BASE_DIR, 'data', 'commands', 'unknown_command.yaml'))
+        return CommandProcessor.create_speech_output(speech_type=command[SPEECH_TYPE],
+                                                    speech_list=command[SPEECH_LIST],
+                                                    command_class='')
+    
+    @staticmethod
+    def wake_up() -> str:
+        try:
+            command = YamlData.read_file(os.path.join(BASE_DIR, 'data', 'commands', 'wake_up.yaml'))
+        except FileNotFoundError as e:
+            raise FileNotExists(path=os.path.join(BASE_DIR, 'data', 'commands', 'wake_up.yaml'))
+        return CommandProcessor.create_speech_output(speech_type=command[SPEECH_TYPE],
+                                                    speech_list=command[SPEECH_LIST],
+                                                    command_class='')
     
 
     class Cli(Command):
@@ -302,14 +322,17 @@ class CommandProcessor:
         @staticmethod
         def random_numbers(argument : list=[1, 100000]) -> int:
             argument = list(map(int, argument))
-            if len(argument) == 0:
-                answer = rnd.randint(1, 100000)
-            elif len(argument) == 1:
-                answer = rnd.randint(argument[0], 100000)
-            elif len(argument) == 2:
-                answer = rnd.randint(argument[0], argument[1])
-            elif len(argument) > 2:
-                answer = rnd.choice(argument)
+            try:
+                if len(argument) == 0:
+                    answer = rnd.randint(1, 100000)
+                elif len(argument) == 1:
+                    answer = rnd.randint(argument[0], 100000)
+                elif len(argument) == 2:
+                    answer = rnd.randint(argument[0], argument[1])
+                elif len(argument) > 2:
+                    answer = rnd.choice(argument)
+            except ValueError:
+                answer = rnd.randint(argument[0], argument[0] + argument[1])
 
             return answer
 
@@ -509,7 +532,7 @@ class CommandProcessor:
                 raise CommandSyntaxInYamlError(command_class=command_class,
                                             key=e)
             return command
-  
+        
 
 class CommandExecutor:
     """
@@ -534,15 +557,21 @@ class CommandExecutor:
     def exec_nessesary_command(command_class : str, voice_input : str) -> str:
         output = ''
         try:
-            # command = f.load_command_data(command_class)
-            command = YamlData.load_command_data(command_class)[command_class]
-            command_processor = CommandExecutor.exec_command[command[COMMAND_TYPE]]()
+            if command_class is None:
+                output = CommandProcessor.unknown_command()
+            elif command_class == WAKE_UP:
+                output = CommandProcessor.wake_up()
+            else:         
+                voice_input = WordNum.word_to_num_in_string(voice_input)
 
-            command = command_processor.lint(command, command_class)
+                command = YamlData.load_command_data(command_class)[command_class]
+                command_processor = CommandExecutor.exec_command[command[COMMAND_TYPE]]()
 
-            output = command_processor.process(command, command_class, voice_input)
+                command = command_processor.lint(command, command_class)
 
-            output = WordNum.num_to_word_in_string(output)
+                output = command_processor.process(command, command_class, voice_input)
+
+                output = WordNum.num_to_word_in_string(output)
         except KeyError as e:
             try:
                 raise CommandAccessError(command_class=command_class,
@@ -554,6 +583,9 @@ class CommandExecutor:
             e.proccess_critical_error()
             output = None
         except UnknownError as e:
+            e.proccess_critical_error()
+            output = None
+        except FileNotExists as e:
             e.proccess_critical_error()
             output = None
         return output

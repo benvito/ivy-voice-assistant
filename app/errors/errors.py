@@ -1,10 +1,10 @@
-from speech_synthesis.tts import TextToSpeech
+from speech_synthesis.tts import TextToSpeech, LunaTTS
 import logging
 
 class SayException(Exception):
     def say(self):
         if self.say_message != '':
-            TextToSpeech.say(self.say_message)
+            LunaTTS.say(self.say_message)
 
     def __str__(self):
         return self.message
@@ -203,3 +203,21 @@ class UnknownError(SayException):
         self.say()
         self.log_critical_error()
 
+
+class FileNotExists(SayException):
+    def __init__(self,
+                 code=200,
+                 path='',
+                 message='Файл не существует',
+                 say_message='Файл не существует'):
+        self.code = code
+        self.message = message
+        self.say_message = say_message
+        self.path = path
+    
+    def log_critical_error(self):
+        logging.critical(f"{self.__class__.__name__} file '{self.path}':Error_code={self.code}:{self.message}.")
+
+    def proccess_critical_error(self):
+        self.say()
+        self.log_critical_error()

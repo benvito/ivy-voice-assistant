@@ -8,8 +8,8 @@ from sklearn.metrics import accuracy_score
 import joblib
 import numpy as np
 from utils.decorators import exec_timer
-from utils import BASE_DIR
-from config.config import PHRASES, PHRASE_VAR, COMMAND_THRESHOLD, COMMAND_RATIO_THRESHOLD
+from config import BASE_DIR
+from config.constants import PHRASES, PHRASE_VAR, COMMAND_THRESHOLD, COMMAND_RATIO_THRESHOLD
 from utils.yaml_utils import YamlData
 import re
 from fuzzywuzzy import fuzz
@@ -134,9 +134,9 @@ class CommandRecongitionModel:
         for command_class, command_probality in zip(top_classes, top_probabilities):
             print(f"{command_class} - {command_probality}")
         
-        if len(top_classes) == 1:
+        if len(top_probabilities) == 1:
             max_command = top_classes[0]
-        elif len(top_classes) == 0:
+        elif len(top_probabilities) == 0:
             max_command = None
         else:
             if top_probabilities[0] - top_probabilities[1] > COMMAND_THRESHOLD:

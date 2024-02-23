@@ -2,9 +2,9 @@ import yaml
 import os
 import shutil
 
-from config.config import PATH
+from config.constants import PATH
 from utils.decorators import exec_timer
-from utils import BASE_DIR
+from config import BASE_DIR
 
 
 class YamlData:
@@ -84,14 +84,3 @@ class YamlData:
         with open(os.path.join(BASE_DIR, file_path), 'r', encoding="utf-8") as file:
             return yaml.safe_load(file)
         
-    @staticmethod
-    @exec_timer
-    def read_config() -> dict:
-        with open(os.path.join(BASE_DIR, "app", "config", "config.yaml"), 'r', encoding="utf-8") as file:
-            return yaml.safe_load(file)
-        
-    @staticmethod
-    @exec_timer
-    def write_config(config : dict):
-        with open(os.path.join(BASE_DIR, "app", "config", "config.yaml"), 'w', encoding="utf-8") as file:
-            yaml.dump(config, file)

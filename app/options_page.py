@@ -6,62 +6,9 @@ from buttons import ClassicButton, ButtonStyle, ContentButton
 from theme import *
 from utils.utils import IODevices
 from utils.yaml_utils import YamlData
-from config.config import NAME, INDEX, IO_DEVICES, INPUT_DEVICE, OUTPUT_DEVICE
+from config.config import Config
+from config.constants import NAME, INDEX, IO_DEVICES, INPUT_DEVICE, OUTPUT_DEVICE
 
-
-class CategoryOptions(ft.UserControl):
-    def __init__(self,
-                 category_label : ft.Text = None,
-                 category_options : list = None,
-                 divider : ft.Divider = None,
-                 *args, **kwargs) -> None:
-        super().__init__(*args, **kwargs)
-        self.category_label = category_label
-        self.category_options = category_options
-        self.divider = divider
-
-        self.category_label_container = ft.Container(
-                                content=self.category_label,
-                                alignment=ft.alignment.center_left, 
-                                margin=ft.margin.symmetric(horizontal=20),
-                                bgcolor=ft.colors.TRANSPARENT,
-                                border_radius=30,
-                                height=50
-                            )
-        self.category_options_list_with_divider = []
-        for i in range(len(self.category_options)):
-            self.category_options_list_with_divider.append(
-                self.category_options[i]
-            )
-            if i != len(self.category_options) - 1:
-                self.category_options_list_with_divider.append(
-                    self.divider
-                )
-
-        self.category_options_container = ft.Container(
-            ItemsColumn(
-                self.category_options_list_with_divider,
-                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                alignment=ft.MainAxisAlignment.CENTER,
-                spacing=0
-            ),
-            alignment=ft.alignment.center,
-            margin=0,
-            bgcolor=ft.colors.TERTIARY,
-            border_radius=30,
-        )
-
-        self.category_options_with_label = ItemsColumn(
-                                [
-                                    self.category_label_container,
-                                    self.category_options_container
-                                ],
-                                spacing=0,
-                            )
-
-
-    def build(self):
-        return self.category_options_with_label
 
 class Option(ft.UserControl):
     def __init__(self,
@@ -122,6 +69,74 @@ class Option(ft.UserControl):
         return self.option_container
 
 
+class CategoryOptions(ft.UserControl):
+    def __init__(self,
+                 category_label : ft.Text = None,
+                 category_options : list = None,
+                 divider : ft.Divider = None,
+                 *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+        self.category_label = category_label
+        self.category_options = category_options
+        self.divider = divider
+
+        self.category_label_container = ft.Container(
+                                content=self.category_label,
+                                alignment=ft.alignment.center_left, 
+                                margin=ft.margin.symmetric(horizontal=20),
+                                bgcolor=ft.colors.TRANSPARENT,
+                                border_radius=30,
+                                height=50
+                            )
+        self.category_options_list_with_divider = []
+        for i in range(len(self.category_options)):
+            self.category_options_list_with_divider.append(
+                self.category_options[i]
+            )
+            if i != len(self.category_options) - 1:
+                self.category_options_list_with_divider.append(
+                    ft.Container(self.divider, margin=ft.margin.symmetric(horizontal=10), bgcolor=ft.colors.OUTLINE)
+                )
+
+        self.category_options_container = ft.Container(
+            ItemsColumn(
+                self.category_options_list_with_divider,
+                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                alignment=ft.MainAxisAlignment.CENTER,
+                spacing=0
+            ),
+            alignment=ft.alignment.center,
+            margin=0,
+            bgcolor=ft.colors.TERTIARY,
+            border_radius=30,
+        )
+
+        self.category_options_with_label = ItemsColumn(
+                                [
+                                    self.category_label_container,
+                                    self.category_options_container
+                                ],
+                                spacing=0,
+                            )
+    # async def update_options_list_with_divider(self):
+    #     self.category_options_list_with_divider = []
+    #     for i in range(len(self.category_options)):
+    #         self.category_options_list_with_divider.append(
+    #             self.category_options[i]
+    #         )
+    #         if i != len(self.category_options) - 1:
+    #             self.category_options_list_with_divider.append(
+    #                 ft.Container(self.divider, margin=ft.margin.symmetric(horizontal=10), bgcolor=ft.colors.OUTLINE)
+    #             )
+    #     self.category_options_container.content.controls = self.category_options_list_with_divider
+    async def add_option(self, option : Option):
+        self.category_options_container.content.controls.append(ft.Container(self.divider, margin=ft.margin.symmetric(horizontal=10), bgcolor=ft.colors.OUTLINE))
+        self.category_options_container.content.controls.append(option)
+        await self.update_async()
+
+    def build(self):
+        return self.category_options_with_label
+
 class OptionsPage(ft.UserControl):
     def __init__(self, 
                  page : ft.Page = None,
@@ -142,10 +157,8 @@ class OptionsPage(ft.UserControl):
         
         self.input_devices = IODevices.get_input_devices()
         self.output_devices = IODevices.get_output_devices()
-        self.input_devices.insert(0, {NAME : 'Default', INDEX : -1})
-        self.output_devices.insert(0, {NAME : 'Default', INDEX : -1})
 
-        self.config = YamlData.read_config()
+        self.config = Config.read_config()
 
         self.system_setting_input = Option(control_type="popup", 
                            popup_text=self.config[IO_DEVICES][INPUT_DEVICE][NAME], 
@@ -175,40 +188,31 @@ class OptionsPage(ft.UserControl):
 
         self.system_setting_options = [
             self.system_setting_input,
-            self.system_setting_output  
+            self.system_setting_output,
         ]
 
-        self.options_frame = Frame(
-                    content=CenterContainer(
-                        ItemsColumn(
-                        [
-                            CategoryOptions(
+        self.system_setting_category = CategoryOptions(
                                 category_label=ft.Text("СИСТЕМНЫЕ НАСТРОЙКИ:", size=TextSize.XS, color=ft.colors.ON_TERTIARY),
-                                divider=ft.Container(ft.Divider(thickness=2), margin=ft.margin.symmetric(horizontal=10), bgcolor=ft.colors.OUTLINE),
-                                category_options=self.system_setting_options
-                            ),
-                            CategoryOptions(
-                                category_label=ft.Text("СИСТЕМНЫЕ НАСТРОЙКИ:", size=TextSize.XS, color=ft.colors.ON_TERTIARY),
-                                divider=ft.Container(ft.Divider(thickness=2), margin=ft.margin.symmetric(horizontal=10), bgcolor=ft.colors.OUTLINE),
-                                category_options=self.system_setting_options
-                            ),
-                            CategoryOptions(
-                                category_label=ft.Text("СИСТЕМНЫЕ НАСТРОЙКИ:", size=TextSize.XS, color=ft.colors.ON_TERTIARY),
-                                divider=ft.Container(ft.Divider(thickness=2), margin=ft.margin.symmetric(horizontal=10), bgcolor=ft.colors.OUTLINE),
-                                category_options=self.system_setting_options
-                            ),
-                            CategoryOptions(
-                                category_label=ft.Text("СИСТЕМНЫЕ НАСТРОЙКИ:", size=TextSize.XS, color=ft.colors.ON_TERTIARY),
-                                divider=ft.Container(ft.Divider(thickness=2), margin=ft.margin.symmetric(horizontal=10), bgcolor=ft.colors.OUTLINE),
+                                divider=ft.Divider(thickness=2),
                                 category_options=self.system_setting_options
                             )
+
+        self.options_column = ItemsColumn(
+                        [
+                            self.system_setting_category,
+                            
                         ],
                         scroll=ft.ScrollMode.AUTO,
                         alignment=ft.MainAxisAlignment.START,
                         horizontal_alignment=ft.CrossAxisAlignment.CENTER
-                    )),
+                    )
+
+        self.options_frame = Frame(
+                    content=CenterContainer(
+                        self.options_column
+                    ),
                     border_radius=30,
-                    alignment=ft.alignment.center,
+                    alignment=ft.alignment.top_center,
                     expand=1
                 )
         
@@ -222,12 +226,16 @@ class OptionsPage(ft.UserControl):
             ]
         )
 
+    async def add_category_options(self, category_option : CategoryOptions):
+        self.options_column.controls.append(category_option)
+        await self.options_column.update_async()
+
     async def change_input_device(self, e : ft.ControlEvent):
         name = e.control.content.content.value
         index = e.control.tooltip
         self.config[IO_DEVICES][INPUT_DEVICE][NAME] = name
         self.config[IO_DEVICES][INPUT_DEVICE][INDEX] = index
-        YamlData.write_config(self.config)
+        Config.write_config(self.config)
         self.system_setting_input.popup_button_text.value = name
         await self.system_setting_input.update_async()
 
@@ -236,10 +244,9 @@ class OptionsPage(ft.UserControl):
         index = e.control.tooltip
         self.config[IO_DEVICES][OUTPUT_DEVICE][NAME] = name
         self.config[IO_DEVICES][OUTPUT_DEVICE][INDEX] = index
-        YamlData.write_config(self.config)
+        Config.write_config(self.config)
         self.system_setting_output.popup_button_text.value = name
         await self.system_setting_output.update_async()
-
 
 
     def build(self):

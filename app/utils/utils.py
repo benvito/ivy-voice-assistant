@@ -10,7 +10,7 @@ from functools import lru_cache
 from pprint import pprint
 import pyaudio
 
-from config.config import SECOND_TO_NANO, TIME_DELIMITER, WORD_MATCH_RATIO
+from config.constants import SECOND_TO_NANO, TIME_DELIMITER, WORD_MATCH_RATIO
 from utils.decorators import exec_timer
 
 class IODevices:
@@ -23,9 +23,13 @@ class IODevices:
         input_devices = []
         for i in range(devices):
             device_info = p.get_device_info_by_index(i)
-            if device_info.get('maxInputChannels') > 0 and device_info.get('hostApi') == 2:
-                input_devices.append({'name': device_info.get('name').encode('cp1251').decode('utf-8'),
-                                     'index': device_info.get('index')})
+            if device_info.get('maxInputChannels') > 0 and device_info.get('hostApi') == 0:
+                d_name = device_info.get('name').encode('cp1251').decode('utf-8')
+                d_index = device_info.get('index')
+                if 'Sound Mapper' in device_info.get('name').encode('cp1251').decode('utf-8'):
+                    d_name = 'Default'
+                input_devices.append({'name': d_name,
+                                     'index': d_index})
         return input_devices
 
 
@@ -38,9 +42,13 @@ class IODevices:
         output_devices = []
         for i in range(devices):
             device_info = p.get_device_info_by_index(i)
-            if device_info.get('maxOutputChannels') > 0 and device_info.get('hostApi') == 2:
-                output_devices.append({'name': device_info.get('name').encode('cp1251').decode('utf-8'),
-                                     'index': device_info.get('index')})
+            if device_info.get('maxOutputChannels') > 0 and device_info.get('hostApi') == 0:
+                d_name = device_info.get('name').encode('cp1251').decode('utf-8')
+                d_index = device_info.get('index')
+                if 'Sound Mapper' in device_info.get('name').encode('cp1251').decode('utf-8'):
+                    d_name = 'Default'
+                output_devices.append({'name': d_name,
+                                     'index': d_index})
         return output_devices
     
 
