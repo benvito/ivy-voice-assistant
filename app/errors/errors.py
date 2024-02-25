@@ -1,4 +1,4 @@
-from speech_synthesis.tts import TextToSpeech, LunaTTS
+from speech_synthesis.tts import LunaTTS
 import logging
 
 class SayException(Exception):
@@ -125,7 +125,7 @@ class CommandSyntaxInYamlError(SayException):
                  command_class='', 
                  code=50,
                  key='',
-                 message='Не хватает нужного параметра в YAML фалйе с командами', 
+                 message='Не хватает нужного параметра в YAML файле с командами', 
                  say_message='Неверное описание команды. Недостает параметров'):
         self.code = code
         self.message = message
@@ -135,6 +135,27 @@ class CommandSyntaxInYamlError(SayException):
 
     def log_critical_error(self):
         logging.critical(f"{self.__class__.__name__} in '{self.command_class}' not exists {self.key}:Error_code={self.code}:{self.message}.")
+
+    def proccess_critical_error(self):
+        self.say()
+        self.log_critical_error()
+
+class SyntaxYamlError(SayException):
+    def __init__(self,
+                 code=51,
+                 message='',
+                 dir='',
+                 say_message='Ошибка в синтаксисе YAML файла'):
+        self.code = code
+        self.message = message
+        self.say_message = say_message
+        self.dir = dir
+
+    def log_critical_error(self):
+        logging.critical(f"{self.__class__.__name__} in {self.dir}:Error_code={self.code}:{self.message}.")
+
+    def log_warning(self):
+        logging.warning(f"{self.__class__.__name__} in {self.dir}:Error_code={self.code}:{self.message}.")
 
     def proccess_critical_error(self):
         self.say()

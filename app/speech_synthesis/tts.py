@@ -5,7 +5,6 @@ import sys
 import time
 import os
 from utils.audio import Audio
-from utils.yaml_utils import YamlData
 from config.config import Config
 from config.constants import IO_DEVICES, OUTPUT_DEVICE, INDEX
 from config import BASE_DIR

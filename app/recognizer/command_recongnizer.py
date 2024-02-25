@@ -14,28 +14,46 @@ from utils.yaml_utils import YamlData
 import re
 from fuzzywuzzy import fuzz
 import os
+from pprint import pprint
+import logging
+from errors.errors import CommandSyntaxInYamlError
 
 def execute_commands_for_learning(commands : dict):
     learning_commands = {}
     for category, details in commands.items():
-        try:
-            phrase_var = details[PHRASE_VAR]
-        except:
-            details[PHRASE_VAR] = []
+        if type(details) == dict:
+            try:
+                phrase_var = details[PHRASE_VAR]
+            except:
+                details[PHRASE_VAR] = []
 
-        if details[PHRASE_VAR]:
-            vars = details[PHRASE_VAR].keys()
+            try:
+                phrases = details[PHRASES]
+            except:
+                try:
+                    raise CommandSyntaxInYamlError(
+                        command_class=category,
+                        key=PHRASES,
+                    )
+                except CommandSyntaxInYamlError as e:
+                    e.log_critical_error()
+                details[PHRASES] = []
+
+            if details[PHRASE_VAR]:
+                vars = list(details[PHRASE_VAR].keys())
+                
+
+            for phrase in details[PHRASES]:
+                if any(var in phrase for var in vars):
+                    for var in vars:
+                        if var in phrase:
+                            for var_word in details[PHRASE_VAR][var]:
+                                phrase_replaced = re.sub(r"\[[^()]*\]", var_word, phrase)
+                                learning_commands[phrase_replaced] = category
+                else:
+                    learning_commands[phrase] = category
         else:
-            vars = []
-        for phrase in details[PHRASES]:
-            if any(var in phrase for var in vars):
-                for var in vars:
-                    if var in phrase:
-                        for var_word in details[PHRASE_VAR][var]:
-                            phrase_replaced = re.sub(r"\[[^()]*\]", var_word, phrase)
-                            learning_commands[phrase_replaced] = category
-            else:
-                learning_commands[phrase] = category
+            logging.log(logging.WARNING, f"Неправильная структура команды: {YamlData.path_to_command(category)}, она не будет использоваться в качестве доступной команды")
 
     return learning_commands
 
@@ -172,8 +190,8 @@ class CommandRecongition(CommandRecongitionModel):
             max_command = self.recognize_command_by_fuzz(text)
         return max_command
 
-m = CommandRecongitionModel()
-m.train_model()
+# m = CommandRecongitionModel()
+# m.train_model()
 # m.test_model("ты такая тупая это кошмар")
 
 

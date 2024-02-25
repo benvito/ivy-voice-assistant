@@ -1,6 +1,7 @@
 import flet as ft
 import time
 import asyncio
+import threading
 
 from equalizer import Equalizer
 from background import Background
@@ -14,6 +15,8 @@ from theme import *
 from editor_page import EditorPage
 from options_page import OptionsPage
 from routing import Routes
+from main import Luna
+
 
 async def main(page: ft.Page):
     page.title = "Luna"
@@ -158,11 +161,17 @@ async def main(page: ft.Page):
             ],
             expand=True
         )
+
+    luna = Luna()
+    
+    luna.start_loop()
     
     await page.add_async(
         app
     )
 
     await page.update_async()
+
+    
 
 ft.app(target=main, assets_dir="assets")

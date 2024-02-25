@@ -1,7 +1,7 @@
 from pymorphy3 import MorphAnalyzer
 from fuzzywuzzy import fuzz
 from num2words import num2words
-from text_to_num import alpha2digit
+from utils.text_to_num import alpha2digit
 import time
 import re
 import os

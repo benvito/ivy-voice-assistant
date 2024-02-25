@@ -52,7 +52,7 @@ class TextEditor(ft.UserControl):
                                     hint_text=EmptyContentText.VARIANT1.value,
                                     hint_style=ft.TextStyle(color=ft.colors.with_opacity(0.25, ft.colors.ON_PRIMARY)),
                                     value=self.base_text_field_value,
-                                    cursor_color=ft.colors.SURFACE,
+                                    cursor_color=ft.colors.SCRIM,
                                     selection_color=ft.colors.with_opacity(0.3, ft.colors.SURFACE_TINT)
                                     )
 
@@ -83,10 +83,12 @@ class TextEditor(ft.UserControl):
 
     async def on_changed(self, e : ft.ControlEvent):
         pass
+
     async def tab_pressed(self):
         await self.text_field.focus_async()
         await asyncio.sleep(0.018)
         pyautogui.write("    ", interval=0.00)
+        await self.update_async()
         
 
     def build(self):
@@ -393,7 +395,7 @@ class EditorPage(ft.UserControl):
     def __init__(self, page : ft.Page):
         super().__init__()
         self.page = page
-
+        self.page.on_keyboard_event = self.on_keyboard_event_handler
         self.deleting_command = None
 
         self.command_classes = YamlData.load_all_commands_folders()

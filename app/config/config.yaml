@@ -6,7 +6,7 @@ io_devices:
     index: 5
     name: Default
 models:
-  wake_word:
-    name: PicoVoice Porcupine
   intent:
     name: LUNA Speach-to-Intent (BETA)
+  wake_word:
+    name: PicoVoice Porcupine

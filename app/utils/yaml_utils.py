@@ -5,6 +5,8 @@ import shutil
 from config.constants import PATH
 from utils.decorators import exec_timer
 from config import BASE_DIR
+import logging
+from errors.errors import SyntaxYamlError
 
 
 class YamlData:
@@ -37,7 +39,27 @@ class YamlData:
         commands = dict()
         for dirName, subdirList, fileList in os.walk(os.path.join(BASE_DIR, 'data', 'commands')):
             if "commands.yaml" in fileList:
-                commands.update(dict(yaml.safe_load(open(os.path.join(dirName, 'commands.yaml'), 'r', encoding='utf-8'))))
+                try:
+                    commands.update(dict(yaml.safe_load(open(os.path.join(dirName, 'commands.yaml'), 'r', encoding='utf-8'))))
+                except ValueError:
+                    message = "Команда не заполнена, и не будет использоваться"
+                    print(f"Команда не заполнена, и не будет использоваться: {dirName}")
+                    try:
+                        raise SyntaxYamlError(
+                            dir=dirName,
+                            message=message
+                        )
+                    except SyntaxYamlError as e:
+                        e.log_warning()
+                        
+                except yaml.YAMLError as e:
+                    try:
+                        raise SyntaxYamlError(
+                            dir=dirName,
+                            message=e
+                        )
+                    except SyntaxYamlError as e:
+                        e.log_critical_error()
         return commands
 
     @staticmethod

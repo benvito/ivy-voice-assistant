@@ -19,8 +19,11 @@ class PvRecorderAudio(PvRecorder):
                     break
             else:
                 self.input_device_index = -1
-        super().__init__(frame_length=512, device_index=self.input_device_index, *args, **kwargs)
-        
+        if self.input_device_index == -1:
+            super().__init__(frame_length=512, device_index=-1, *args, **kwargs)
+        else:
+            super().__init__(frame_length=512, device_index=self.input_device_index, *args, **kwargs)
+
 class Audio:
     @staticmethod
     def play_mono_audio(file_path, output_device_index):
