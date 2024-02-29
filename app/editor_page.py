@@ -11,6 +11,7 @@ from frames import Frame, SwitchableWindow
 from buttons import ClassicButton, ButtonStyle, ContentButton
 from theme import *
 from utils.yaml_utils import YamlData
+from main import Luna
 
 class EmptyContentText(enum.auto):
     NONE = ft.Text('', color=ft.colors.ON_PRIMARY)
@@ -361,7 +362,8 @@ class EditorSnackBars(enum.auto):
                 f"Команда не выбрана", 
                 color=ft.colors.ON_ERROR, 
                 size=TextSize.XS), 
-            bgcolor=ft.colors.ERROR
+            bgcolor=ft.colors.ERROR,
+            duration=3000
             )
 
     COMMAND_SAVED = ft.SnackBar(
@@ -369,7 +371,8 @@ class EditorSnackBars(enum.auto):
                 f"Команда сохранена", 
                 color=ft.colors.ON_SURFACE, 
                 size=TextSize.XS), 
-            bgcolor=ft.colors.SURFACE_VARIANT
+            bgcolor=ft.colors.SURFACE_VARIANT,
+            duration=1500
             )
     
     COMMAND_DELETED = ft.SnackBar(
@@ -378,7 +381,8 @@ class EditorSnackBars(enum.auto):
                 color=ft.colors.ON_SURFACE,
                 size=TextSize.XS
             ),
-            bgcolor=ft.colors.SURFACE_VARIANT
+            bgcolor=ft.colors.SURFACE_VARIANT,
+            duration=1500
     )
 
     ERROR_SAVING = ft.SnackBar(
@@ -386,14 +390,16 @@ class EditorSnackBars(enum.auto):
                 f"Не удалось сохранить", 
                 color=ft.colors.ON_ERROR, 
                 size=TextSize.XS), 
-            bgcolor=ft.colors.ERROR
+            bgcolor=ft.colors.ERROR,
+            duration=3000
             )
 
 
 
 class EditorPage(ft.UserControl):
-    def __init__(self, page : ft.Page):
+    def __init__(self, page : ft.Page, luna : Luna = None):
         super().__init__()
+        self.luna = luna
         self.page = page
         self.page.on_keyboard_event = self.on_keyboard_event_handler
         self.deleting_command = None
@@ -404,7 +410,7 @@ class EditorPage(ft.UserControl):
 
         for command_class, command_class_path in self.command_classes.items():
             self.command_buttons.append(
-                ClassicButton(text=ft.Text(command_class, color=ft.colors.ON_PRIMARY_CONTAINER, 
+                ClassicButton(text=ft.Text(command_class, color=ft.colors.ON_PRIMARY_CONTAINER,
                                            size=TextSize.XS), 
                                            img=ft.Image(src="main_images/command_icon.png", color=ft.colors.ON_PRIMARY_CONTAINER),
                                            on_click=self.on_command_button_click, 
@@ -415,7 +421,8 @@ class EditorPage(ft.UserControl):
                                                     items_vertical_alignment=ft.CrossAxisAlignment.CENTER,
                                                     on_click=self.on_delete_command_cilck,
                                                     tooltip=f"delete:{command_class}",
-                                                    height=40),
+                                                    height=40,
+                                                    width=50),
                                            tooltip=command_class_path, 
                                            height=40,)                
             )
@@ -468,7 +475,7 @@ class EditorPage(ft.UserControl):
         )
 
         self.save_command = ft.Container(
-            ClassicButton(img=ft.Text("СОХРАНИТЬ", color=ft.colors.ON_PRIMARY_CONTAINER, size=TextSize.M),
+            ClassicButton(text=ft.Text("СОХРАНИТЬ", color=ft.colors.ON_PRIMARY_CONTAINER, size=TextSize.M),
                                             bgcolor=ft.colors.ON_TERTIARY_CONTAINER,
                                            on_click=self.save_command_click, 
                                            alignment=ft.alignment.center,
@@ -479,8 +486,20 @@ class EditorPage(ft.UserControl):
             expand=1
         )
 
+        self.train_models_button = ft.Container(
+            ClassicButton(text=ft.Text("ПЕРЕОБУЧИТЬ МОДЕЛЬ", color=ft.colors.ON_PRIMARY_CONTAINER, size=TextSize.M),
+                                            bgcolor=ft.colors.ON_TERTIARY_CONTAINER,
+                                           on_click=self.train_model_click, 
+                                           alignment=ft.alignment.center,
+                                           items_alignment=ft.MainAxisAlignment.CENTER,
+                                           items_vertical_alignment=ft.CrossAxisAlignment.CENTER,
+                                           tooltip="train model", 
+                                           height=40),
+            height=40
+        )
+
         self.utils_buttons_row = ItemsRow(
-            [self.add_command_button, self.save_command],
+            [self.add_command_button, self.save_command]
         )
 
         self.scroll_commands_column =  ItemsColumn(
@@ -500,6 +519,7 @@ class EditorPage(ft.UserControl):
                                         controls=[
                                             self.commands_label, 
                                             ft.Container(self.scroll_commands_column, expand=15),
+                                            self.train_models_button,
                                             self.utils_buttons_row
                                           ],
                                           alignment=ft.MainAxisAlignment.START,
@@ -575,6 +595,52 @@ class EditorPage(ft.UserControl):
                                     margin=ft.margin.symmetric(vertical=20, horizontal=20),
                                     ), 
                                 expand=5)
+
+        self.frames_row = FramesRow([
+                    self.frame_commands,
+                    self.frame_editor
+                    ])
+        
+        self.page_container = PageContainer(self.frames_row, scale=1)
+
+    @property
+    def text_size(self):
+        return self.train_models_button.content.text_content.size
+    
+    @text_size.setter
+    def text_size(self, value):
+        self.train_models_button.content.text_content.size = value
+        self.save_command.content.text_content.size = value
+
+
+    @property
+    def frames_spacing(self):
+        return self.frames_row.spacing
+    
+    @frames_spacing.setter
+    def frames_spacing(self, value):
+        self.frames_row.spacing = value
+
+    @property
+    def editor_frame_margin(self):
+        return self.page_container.margin
+
+    @editor_frame_margin.setter
+    def editor_frame_margin(self, value):
+        self.page_container.margin = value
+
+    @property
+    def page_scale(self):
+        return self.page_container.scale
+
+    @page_scale.setter
+    def page_scale(self, value):
+        self.page_container.scale = value
+
+    async def train_model_click(self, e : ft.ControlEvent):
+        self.luna.cmd_recognizer.train_model()
+        self.luna.init_command_recognizer()
+        self.luna.restart_loop()
 
     async def on_open_command_dir_click(self, e : ft.ControlEvent):
         if self.editor_window.editing_dir is not None:
@@ -671,7 +737,6 @@ class EditorPage(ft.UserControl):
             self.page.snack_bar = EditorSnackBars.NO_FILE_EDITING_NOW
             self.page.snack_bar.open = True
         
-        
         self.dlg_confirm_save.open = False
         
         await self.page.update_async()
@@ -755,7 +820,4 @@ class EditorPage(ft.UserControl):
             await self.update_async()
 
     def build(self):
-        return PageContainer(FramesRow([
-                    self.frame_commands,
-                    self.frame_editor
-                    ]))
+        return self.page_container

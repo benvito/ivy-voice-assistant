@@ -39,6 +39,17 @@ async def main(page: ft.Page):
     page.spacing = 0
     page.padding = 0
 
+    page_sizes_width = {
+        "XXS" : 1100,
+        "XS" : 1400,
+        "M" : 1600,
+        "L" : 1800,
+        "XL" : 1900
+    }
+
+    luna = Luna()
+
+
     async def resize(e):
         page.window_height = page.window_height
         page.window_width = page.window_width
@@ -50,6 +61,18 @@ async def main(page: ft.Page):
         elif page.route == Routes.OPTIONS_PAGE:
             print("options")
         elif page.route == Routes.EDITOR_PAGE:
+            editor_page.page_scale = 1 + ((page.window_max_width + page.window_max_height) - (page.window_width + page.window_height)) / 10000
+            editor_page.frames_spacing = 26 * ((page.window_width + page.window_height) / (page.window_max_width + page.window_max_height))
+            
+            if page.window_width < page_sizes_width["XXS"]:
+                editor_page.text_size = TextSize.XXS
+            elif page.window_width < page_sizes_width["XS"]:
+                editor_page.text_size = TextSize.XS
+            else:
+                editor_page.text_size = TextSize.M
+
+            await editor_page.update_async()
+            
             print("editor")
     
     async def on_window_event_handler(e):
@@ -87,6 +110,10 @@ async def main(page: ft.Page):
         page.route = Routes.EDITOR_PAGE
         await page.update_async()
 
+    async def restart_luna(e : ft.ControlEvent):
+        page.dialog = navigation_rail.dlg_confirm_restart_loop
+        navigation_rail.dlg_confirm_restart_loop.open = True
+        await page.update_async()  
 
     page.on_resize = resize
     
@@ -121,9 +148,19 @@ async def main(page: ft.Page):
                                 button_on_click=go_editor)
     
     logo = "nav_rail/logo128_nav_rail.png"
+ 
+
+    restart_button = SideBarButton(img='nav_rail/update_nav_rail.png',
+                                   scale=1,
+                                   bg_padding=10,
+                                   rotate_hover=2,
+                                   button_on_click=restart_luna)
     
     navigation_rail = SideBar(buttons=[home_button, editor_button, options_button],
-                              logo=logo)
+                              restart_button=restart_button,
+                              logo=logo,
+                              luna=luna)
+
 
     main_page = MainPage(luna_img="main_images/luna_center_main_page_clear.png",
                         luna_color=ft.LinearGradient(
@@ -150,8 +187,8 @@ async def main(page: ft.Page):
     backgroud = Background(ft.RadialGradient(colors=[ft.colors.ON_BACKGROUND, ft.colors.BACKGROUND], radius=0.8))
     cur_page = 1
     page.route = "/options"
-    editor_page = EditorPage(page=page)
-    options_page = OptionsPage(page=page)
+    editor_page = EditorPage(page=page, luna=luna)
+    options_page = OptionsPage(page=page, luna=luna)
     app = ft.Stack(
             [
                 backgroud,
@@ -162,7 +199,6 @@ async def main(page: ft.Page):
             expand=True
         )
 
-    luna = Luna()
     
     luna.start_loop()
     

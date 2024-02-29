@@ -3,6 +3,7 @@ import threading
 import logging
 import os
 import asyncio
+import ctypes
 
 from recognizer.speech_recognizer import SpeechRecognizerGoogle
 from recognizer.command_recongnizer import CommandRecongitionModel, CommandRecongition
@@ -18,39 +19,68 @@ logging.basicConfig(level=logging.INFO, filename=os.path.join(BASE_DIR, 'logs', 
 
 class Luna:
     def __init__(self):
-        self.recognizer, self.hotword, self.recorder, self.cmd_recognizer = self.init()
-        self.luna_active = True
+        self.recognizer = None
+        self.hotword = None
+        self.recorder = None
+        self.cmd_recognizer = None
+        self.init()
+        self.luna_thread = None
+        self.active = True
+        self.listen_to_command = False
+        self.process_command = False
     def init_speech_recognizer(self):
-        rec = SpeechRecognizerGoogle()
-        return rec
+        self.recognizer = SpeechRecognizerGoogle()
 
     def init_hotword(self):
-        hotword = PicoVoiceHotWord()
-        return hotword
+        self.hotword = PicoVoiceHotWord()
 
     def init_recorder(self):
-        recorder = PvRecorderAudio()
-        return recorder
+        self.recorder = PvRecorderAudio()
 
     def init_command_recognizer(self):
-        cmd_recognizer = CommandRecongition()
-        return cmd_recognizer
+        self.cmd_recognizer = CommandRecongition()
     
     def init_tts(self):
         LunaTTS.__init__(name="Anna", rate=150)
 
     def init(self):
-        recognizer = self.init_speech_recognizer()
-        hotword = self.init_hotword()
-        recorder = self.init_recorder()
-        cmd_recognizer = self.init_command_recognizer()
+        self.init_speech_recognizer()
+        self.init_hotword()
+        self.init_recorder()
+        self.init_command_recognizer()
         self.init_tts()
-        return recognizer, hotword, recorder, cmd_recognizer
+
+    # @property
+    # def active(self):
+    #     return self._active
+    
+    # @active.setter
+    # def active(self, value):
+    #     self._active = value
+    #     if value:
+    #         self.start_loop()
+    def restart_loop(self):
+        self.stop_loop()
+        if self.luna_thread.is_alive():
+            self.emergency_stop_loop()
+        self.start_loop()
+        print('Luna loop has been restarted')
+    
+    def wait_for_thread_finish(self):
+        if self.luna_thread and self.luna_thread.is_alive():
+            self.luna_thread.join()
+
+    def emergency_stop_loop(self):
+        thread_id = ctypes.c_long(self.luna_thread.ident)
+        ctypes.pythonapi.PyThreadState_SetAsyncExc(thread_id, ctypes.py_object(SystemExit))
+        self.wait_for_thread_finish()
 
     def stop_loop(self):
-        self.luna_active = False
+        self.active = True
+        # self.wait_for_thread_finish()
 
     def start_loop(self):
+        self.active = True
         self.luna_thread = threading.Thread(target=self.main_loop,
                                             daemon=True)
         self.luna_thread.start()
@@ -86,14 +116,20 @@ class Luna:
         # hotword.record_wake_audio_data(100, None)
 
         self.recorder.start()
-        while self.luna_active:
-            print("Listening...")
-            frame = self.recorder.read()
-            keyword_index = self.hotword.hotword_in_audio_frame(frame)
+        while self.active:
+            # print("Listening...")
+            try:
+                frame = self.recorder.read()
+                keyword_index = self.hotword.hotword_in_audio_frame(frame)
+            except ValueError:
+                pass
             if keyword_index != -1:
                 wake_out = CommandExecutor.exec_nessesary_command(WAKE_UP, '')
                 LunaTTS.say(wake_out)
+                self.listen_to_command = True
                 voice_input = self.recognizer.listen()
+                self.process_command = True
+                self.listen_to_command = False
                 if voice_input:
                     print("voice_input: ", voice_input)
                     command_class = self.cmd_recognizer.recognize_command(voice_input)
@@ -103,6 +139,7 @@ class Luna:
                     print(voice_output)
 
                     LunaTTS.say(voice_output)
+                self.process_command = False
         
         
         # while True:

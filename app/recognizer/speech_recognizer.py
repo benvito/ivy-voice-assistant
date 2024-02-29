@@ -55,7 +55,7 @@ class SpeechRecognizerGoogle:
         query = None
         with self.microphone as source:      
             print("DETECTING NOISES...") 
-            self.recognizer.adjust_for_ambient_noise(source, 0.5)
+            self.recognizer.adjust_for_ambient_noise(source, 0.6)
             print("NOISES DETECTED")      
             while audio is None:
                 if LunaTTS.saying_thread.is_alive() == False:

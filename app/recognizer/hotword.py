@@ -23,7 +23,8 @@ class PicoVoiceHotWord:
         self.porcupine = pvporcupine.create(
             access_key=self.access_key,
             keyword_paths=key_word_paths,
-            model_path=model_path
+            model_path=model_path,
+            sensitivities=[0.1]
         )
 
     def hotword_in_audio_frame(self, audio_frame):

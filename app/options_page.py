@@ -1,4 +1,5 @@
 import flet as ft
+import asyncio
 
 from layouts import FramesRow, PageContainer, CenterContainer, ItemsColumn, ItemsRow
 from frames import Frame
@@ -8,6 +9,8 @@ from utils.utils import IODevices
 from utils.yaml_utils import YamlData
 from config.config import Config
 from config.constants import NAME, INDEX, IO_DEVICES, INPUT_DEVICE, OUTPUT_DEVICE
+from main import Luna
+import queue
 
 
 class Option(ft.UserControl):
@@ -140,19 +143,26 @@ class CategoryOptions(ft.UserControl):
 class OptionsPage(ft.UserControl):
     def __init__(self, 
                  page : ft.Page = None,
+                 luna : Luna = None,
                  *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.page = page
+        self.luna = luna
+
+        self.changed_options_functions = queue.Queue()
 
         self.save_options_button = ClassicButton(
                             text=ft.Text("СОХРАНИТЬ", color=ft.colors.ON_TERTIARY, size=TextSize.L), 
                             items_alignment=ft.MainAxisAlignment.CENTER,
                             border_radius=ft.border_radius.all(30),
                             tooltip="save options",
+                            on_click=self.save_options,
                             bgcolor=ft.colors.ON_TERTIARY_CONTAINER,
+                            style=ButtonStyle.SAVE_BUTTON,
                             height=50,
                             width=500,
-                            scale=1
+                            scale=1,
+                            disabled=True
                     )
         
         self.input_devices = IODevices.get_input_devices()
@@ -226,6 +236,20 @@ class OptionsPage(ft.UserControl):
             ]
         )
 
+    async def save_options(self, e : ft.ControlEvent):
+        if e.control.tooltip == "save options":
+            while not self.changed_options_functions.empty():
+                if not self.luna.listen_to_command and not self.luna.process_command:
+                    to_update_function = self.changed_options_functions.get()
+                    to_update_function() 
+
+            self.save_options_button.disabled_button = True
+
+            self.luna.restart_loop()
+            
+            await self.save_options_button.update_async()
+
+
     async def add_category_options(self, category_option : CategoryOptions):
         self.options_column.controls.append(category_option)
         await self.options_column.update_async()
@@ -237,6 +261,13 @@ class OptionsPage(ft.UserControl):
         self.config[IO_DEVICES][INPUT_DEVICE][INDEX] = index
         Config.write_config(self.config)
         self.system_setting_input.popup_button_text.value = name
+
+        # Save button events
+        self.changed_options_functions.put(self.luna.init_recorder)
+        self.changed_options_functions.put(self.luna.init_speech_recognizer)
+        self.save_options_button.disabled_button = False
+        await self.save_options_button.update_async()
+
         await self.system_setting_input.update_async()
 
     async def change_output_device(self, e : ft.ControlEvent):
@@ -246,6 +277,12 @@ class OptionsPage(ft.UserControl):
         self.config[IO_DEVICES][OUTPUT_DEVICE][INDEX] = index
         Config.write_config(self.config)
         self.system_setting_output.popup_button_text.value = name
+
+        # Save button events
+        self.changed_options_functions.put(self.luna.init_tts)
+        self.save_options_button.disabled_button = False
+        await self.save_options_button.update_async()
+
         await self.system_setting_output.update_async()
 
 

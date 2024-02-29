@@ -49,6 +49,28 @@ dialog/thanks: # non-system
     - Обращайся
     - Если что я здесь
 
+dialog/how_are_you: # non-system
+  phrases:
+    - как дела
+    - как у тебя дела
+    - как ты
+    - как себя чувствуешь
+    - у тебя все хорошо
+  exclude_phrases:
+    - сделай
+    - скажи
+    - покажи
+    - расскажи
+    - что значит
+  command_type: dialog
+  speech_type: dynamic
+  speech_list:
+    - У меня все супер
+    - Пока не родила
+    - Дела такие же, как и были вчера
+    - Потихоньку, помаленьку
+    - Все стабильно
+
 dialog/compliments:
   phrases:
     - ты супер

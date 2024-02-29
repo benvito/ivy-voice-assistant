@@ -56,9 +56,15 @@
 # arr = np.reshape(arr, (4, 1))
 # print(arr)
 
-from attrdict import AttrDict
-from config.config import Config
+# from attrdict import AttrDict
+# from config.config import Config
 
-config_dict = Config.read_config()
-config = AttrDict(**config_dict)
-print(config.models.wake_word)
+# config_dict = Config.read_config()
+# config = AttrDict(**config_dict)
+# print(config.models.wake_word)
+
+# class Luna:
+#     def __init__(self):
+#         self.text = "test"
+#     def print(self):
+#         print(self.text)

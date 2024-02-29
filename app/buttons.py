@@ -8,7 +8,26 @@ class ButtonStyle(auto):
             elevation=0,
             bgcolor=ft.colors.with_opacity(0, ft.colors.ON_TERTIARY),
             overlay_color=ft.colors.with_opacity(0, ft.colors.TERTIARY),
-            shape=ft.RoundedRectangleBorder(radius=6),
+            shape=ft.RoundedRectangleBorder(radius=30),
+            padding=0
+        )
+
+    SAVE_BUTTON = ft.ButtonStyle(
+            elevation=0,
+            bgcolor= {
+                ft.MaterialState.DEFAULT : ft.colors.GREEN,
+                ft.MaterialState.DISABLED : ft.colors.BLACK
+                },
+            overlay_color=ft.colors.with_opacity(0, ft.colors.TERTIARY),
+            shape=ft.RoundedRectangleBorder(radius=30),
+            padding=0
+        )
+    
+    SIDE_BAR_BUTTON = ft.ButtonStyle(
+            elevation=0,
+            bgcolor=ft.colors.with_opacity(0, ft.colors.ON_TERTIARY),
+            overlay_color=ft.colors.with_opacity(0, ft.colors.TERTIARY),
+            shape=ft.RoundedRectangleBorder(radius=30),
             padding=0
         )
 
@@ -71,13 +90,14 @@ class ClassicButton(ft.ElevatedButton):
                  items_vertical_alignment : ft.CrossAxisAlignment = ft.CrossAxisAlignment.CENTER,
                  animation_scale : ft.Animation = ft.Animation(100, ft.AnimationCurve.EASE_IN_OUT),
                  hover_style : str = "shadow",
+                 style : ButtonStyle = ButtonStyle.NO_BORDER_BG,
                  expand : int = None,
-                 reverse_items : bool = False,
+                 disabled : bool = False,
                  *args, **kwargs):
         
         super().__init__(*args, **kwargs)
-
-        self.button_items = [img, text, content]
+        self.text_content = text
+        self.button_items = [img, self.text_content, content]
         self.button_items = [x for x in self.button_items if x is not None]
         self.extra_content = extra_content
         self.button_color = bgcolor
@@ -91,7 +111,7 @@ class ClassicButton(ft.ElevatedButton):
 
         self.buttons_container_items = FramesRow(
                     [
-                        self.items,
+                        ft.Container(self.items, expand=1),
                         ft.Container(
                             self.extra_content,
                         ) 
@@ -116,7 +136,7 @@ class ClassicButton(ft.ElevatedButton):
             ),
 
             height=height,
-            bgcolor=self.button_color,
+            # bgcolor=self.button_color,
             alignment=alignment,
             border_radius=border_radius,
             margin=margin,
@@ -127,13 +147,16 @@ class ClassicButton(ft.ElevatedButton):
         )
 
         self.content = self.button_container
-        self.style = ButtonStyle.NO_BORDER_BG
+
+        self.style = style
+
         self.on_hover = self.on_hover_button
         self.expand = expand
 
         self.background_color = self.button_color
         self.border_radius_smooth = border_radius
         self.scaling = scale
+        self.disabled_button = disabled
 
         self._is_secected = False
 
@@ -150,6 +173,20 @@ class ClassicButton(ft.ElevatedButton):
 
     def on_change_secected(self):
         pass
+
+    @property
+    def disabled_button(self):
+        return self.disabled
+    
+    @disabled_button.setter
+    def disabled_button(self, value : bool):
+        self.disabled = value
+        if self.disabled:
+            # self.background_color = ft.colors.with_opacity(0.5, self.background_color)
+            self.opacity = 0.3
+        else:
+            # self.background_color = ft.colors.with_opacity(1, self.background_color)
+            self.opacity = 1
 
     @property
     def is_secected(self):
@@ -193,6 +230,7 @@ class SideBarButton(ft.ElevatedButton):
                  bg_padding : float = None,
                  button_on_click : callable = None,
                  scale_hover : float = 0.9,
+                 rotate_hover : float = 0,
                  opacity_scale : float = 0.75,
                  color : str = ft.colors.ON_TERTIARY_CONTAINER,
                  *args, **kwargs):
@@ -206,8 +244,9 @@ class SideBarButton(ft.ElevatedButton):
         self.button_bg_padding = bg_padding
         self.img = img
         self.scale_button = scale
+        self.rotate_hover = rotate_hover
 
-        self.rail_button_style = ButtonStyle.NO_BORDER_BG
+        self.rail_button_style = ButtonStyle.SIDE_BAR_BUTTON
 
         self.button_img = ft.Image(
             src=self.img,
@@ -225,6 +264,10 @@ class SideBarButton(ft.ElevatedButton):
             animate_opacity=ft.Animation(
                 150,
                 ft.AnimationCurve.LINEAR
+            ),
+            animate_rotation=ft.Animation(
+                150,
+                ft.AnimationCurve.FAST_OUT_SLOWIN
             )
         )
 
@@ -239,8 +282,10 @@ class SideBarButton(ft.ElevatedButton):
             e.control.content.animate_scale = ft.Animation(150, ft.AnimationCurve.EASE_OUT)
             e.control.content.scale *= self.scale_hover_button
             e.control.content.opacity *= self.opacity_scale_button
+            e.control.content.rotate = self.rotate_hover
         else:
             e.control.content.animate_scale = ft.Animation(150, ft.AnimationCurve.EASE_IN)
             e.control.content.scale *= round(1 / self.scale_hover_button, 3)
             e.control.content.opacity *= round(1 / self.opacity_scale_button, 3)
+            e.control.content.rotate = 0
         await e.control.update_async()
