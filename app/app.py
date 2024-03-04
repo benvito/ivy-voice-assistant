@@ -2,6 +2,10 @@ import flet as ft
 import time
 import asyncio
 import threading
+from pystray import MenuItem as item
+import pystray
+from PIL import Image
+import queue
 
 from equalizer import Equalizer
 from background import Background
@@ -16,7 +20,8 @@ from editor_page import EditorPage
 from options_page import OptionsPage
 from routing import Routes
 from main import Luna
-
+from periodic_task import Periodic
+from speech_synthesis.tts import LunaTTS
 
 async def main(page: ft.Page):
     page.title = "Luna"
@@ -49,6 +54,16 @@ async def main(page: ft.Page):
 
     luna = Luna()
 
+    tasks_queue = queue.Queue()
+
+    async def async_check_variables():
+        if main_page.equalizer_class.now_audio_play == True and page.route == Routes.MAIN_PAGE:
+            await main_page.equalizer_class.equalizer_click()
+
+        if tasks_queue.qsize() > 0:
+            task = tasks_queue.get()
+            await task()
+
 
     async def resize(e):
         page.window_height = page.window_height
@@ -58,6 +73,8 @@ async def main(page: ft.Page):
             print("main page")
             main_page.center_items.scale = (page.window_width + page.window_height) / (page.window_max_width + page.window_max_height)
             await main_page.update_async()
+            # asyncio.create_task(waiting_for_play())
+            
         elif page.route == Routes.OPTIONS_PAGE:
             print("options")
         elif page.route == Routes.EDITOR_PAGE:
@@ -74,6 +91,7 @@ async def main(page: ft.Page):
             await editor_page.update_async()
             
             print("editor")
+
     
     async def on_window_event_handler(e):
         pass
@@ -85,16 +103,20 @@ async def main(page: ft.Page):
     page.on_keyboard_event = on_keyboard_event_handler
 
     async def route_change(e : ft.RouteChangeEvent):
+        global check_equalizer
         print(e.route)
         if e.route == Routes.MAIN_PAGE:
             app.controls[cur_page] = main_page
             await app.update_async()
+            # asyncio.create_task(main_page.equalizer_class.equlizer_dance.start())
         elif e.route == Routes.OPTIONS_PAGE:
             app.controls[cur_page] = options_page
             await app.update_async()
+
         elif e.route == Routes.EDITOR_PAGE:
             app.controls[cur_page] = editor_page
             await page.update_async()
+
         await resize(None)
 
 
@@ -130,7 +152,35 @@ async def main(page: ft.Page):
     page.bgcolor="black"
     page.on_route_change = route_change
 
-    title = AppTitleBar(page=page)
+    
+
+    def quit_window(icon, item):
+        tasks_queue.put(page.window_close_async)
+        tasks_queue.put(page.update_async)
+
+    def show_window(icon, item):
+        page.window_visible = True
+        tasks_queue.put(page.update_async)
+
+    async def withdraw_window(e):  
+        print("withdraw")
+        page.window_visible = False
+        await page.update_async()
+        await asyncio.sleep(0.05)
+
+    image = Image.open("assets/icons/logo32.ico")
+    menu = (item('Quit',quit_window), item('Show', show_window))
+    icon = pystray.Icon("name", image, "title", menu)
+
+    tray_thread = threading.Thread(target=icon.run, name="tray", daemon=True)
+    tray_thread.start()
+
+    check_equalizer = Periodic(async_check_variables, 0.05)
+    await check_equalizer.start()
+    
+    # threading.Thread(target=icon.run, name="icon").start()
+
+    title = AppTitleBar(page=page, exit_click=withdraw_window)
 
     home_button = SideBarButton(img='nav_rail/HOME_nav_rail.png',
                                 scale=1,
@@ -184,6 +234,9 @@ async def main(page: ft.Page):
                                     equalizer_color=ft.colors.SCRIM),
                         page=page)
     
+    LunaTTS.equalizer = main_page.equalizer_class
+    print("LunaTTS.equalizer: ", LunaTTS.equalizer)
+    
     backgroud = Background(ft.RadialGradient(colors=[ft.colors.ON_BACKGROUND, ft.colors.BACKGROUND], radius=0.8))
     cur_page = 1
     page.route = "/options"
@@ -200,7 +253,7 @@ async def main(page: ft.Page):
         )
 
     
-    luna.start_loop()
+    await luna.start_loop()
     
     await page.add_async(
         app

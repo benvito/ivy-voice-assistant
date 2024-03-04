@@ -9,6 +9,7 @@ import webbrowser
 import wikipediaapi
 from pprint import pprint
 import threading
+import ctypes
 from abc import abstractmethod
 
 from config.constants import *
@@ -439,9 +440,9 @@ class CommandProcessor:
 
             for thread in threads:
                 if thread.name == trigger:
-                    # thread_id = ctypes.c_long(thread.ident)
-                    # ctypes.pythonapi.PyThreadState_SetAsyncExc(thread_id, ctypes.py_object(SystemExit))
-                    IMacro.trigger_stop = trigger
+                    thread_id = ctypes.c_long(thread.ident)
+                    ctypes.pythonapi.PyThreadState_SetAsyncExc(thread_id, ctypes.py_object(SystemExit))
+                    # IMacro.trigger_stop = trigger
 
             output = CommandProcessor.create_speech_output(speech_type=command[SPEECH_TYPE],
                                         speech_list=command[SPEECH_LIST],

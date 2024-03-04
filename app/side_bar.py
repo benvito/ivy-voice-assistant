@@ -103,7 +103,7 @@ class SideBar(ft.UserControl):
                     )
     
     async def confirm_restart_loop(self, e):
-        self.luna.restart_loop()
+        await self.luna.restart_loop()
         self.dlg_confirm_restart_loop.open = False
         self.page.snack_bar = SideBarSnackBars.RESTART_LOOP_SUCCESS
         self.page.snack_bar.open = True

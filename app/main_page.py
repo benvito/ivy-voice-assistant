@@ -48,10 +48,11 @@ class MainPage(ft.UserControl):
         )
 
     async def on_hover(self, e):
-        if e.data == "true":
-            await self.equalizer_class.equlizer_dance.start()
-        elif e.data == "false":
-            await self.equalizer_class.equlizer_dance.stop()
+        # if e.data == "true":
+        #     await self.equalizer_class.equlizer_dance.start()
+        # elif e.data == "false":
+        #     await self.equalizer_class.equlizer_dance.stop()
+        pass
 
     def on_window_event_handler(self, e):
         pass

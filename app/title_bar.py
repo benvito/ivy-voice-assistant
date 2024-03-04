@@ -2,7 +2,13 @@ import flet as ft
 from theme import *
 
 class AppTitleBar(ft.Row):
-    def __init__(self, page : ft.Page, *args, **kwargs) -> None:
+    def __init__(
+            self, 
+            page : ft.Page, 
+            minimize_click : callable = None,
+            scroll_click : callable = None,
+            exit_click : callable = None,
+            *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.page = page
         self.title_margin = 6
@@ -34,6 +40,9 @@ class AppTitleBar(ft.Row):
             width=40
         )
 
+        if scroll_click:
+            self.scroll_button.on_click = scroll_click
+
         ### MINIMIZE BUTTON ###
         self.minimize_img = ft.Image(
             src="title/mini_title_button.png",
@@ -54,6 +63,9 @@ class AppTitleBar(ft.Row):
             )
         )
 
+        if minimize_click:
+            self.minimize_button.on_click = minimize_click
+
         ### EXIT BUTTON ###
         self.exit_img = ft.Image(
             src="title/exit_title_button.png",
@@ -73,6 +85,9 @@ class AppTitleBar(ft.Row):
                 overlay_color=ft.colors.with_opacity(self.opacity_hover_button, ft.colors.ON_PRIMARY)
             )
         )
+
+        if exit_click:
+            self.exit_button.on_click = exit_click
 
         ### LUNA TITLE ###
         self.luna_version_text = ft.Container(

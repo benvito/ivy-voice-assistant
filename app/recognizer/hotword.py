@@ -24,7 +24,7 @@ class PicoVoiceHotWord:
             access_key=self.access_key,
             keyword_paths=key_word_paths,
             model_path=model_path,
-            sensitivities=[0.1]
+            sensitivities=[0.5]
         )
 
     def hotword_in_audio_frame(self, audio_frame):
@@ -37,7 +37,7 @@ class PicoVoiceHotWord:
 class HotwordModel:
     def __init__(
             self, 
-            hotword="луна", 
+            hotword="эй луна", 
             path=os.path.join(BASE_DIR, "data", "train_data", "hotword_data"),
             threshold=0.95,
             sample_rate=44100,

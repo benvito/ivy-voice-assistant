@@ -4,6 +4,9 @@ import os
 import numpy as np
 from pvrecorder import PvRecorder
 from config.config import Config
+import struct
+from equalizer import Equalizer
+import asyncio
 
 
 class PvRecorderAudio(PvRecorder):
@@ -26,8 +29,9 @@ class PvRecorderAudio(PvRecorder):
 
 class Audio:
     @staticmethod
-    def play_mono_audio(file_path, output_device_index):
+    def play_mono_audio(file_path, output_device_index, chunk_size=2048, equalizer : Equalizer=None):
         try:
+            dataint = None
             wf = wave.open(file_path, 'rb')
 
             p = pyaudio.PyAudio()
@@ -36,20 +40,41 @@ class Audio:
                             channels=wf.getnchannels(),
                             rate=wf.getframerate(),
                             output=True,
-                            output_device_index=output_device_index)
+                            output_device_index=output_device_index
+                            )                            
 
-            data = wf.readframes(1024)
+            frame_size = wf.getsampwidth() * wf.getnchannels()
+            if frame_size > 3:
+                chunk_size = 4096
+            else:
+                chunk_size = 1024
+            chunk_size_frame = int(chunk_size*2 // frame_size)
+            
+            data = wf.readframes(chunk_size_frame)
 
             while data:
                 stream.write(data)
-                data = wf.readframes(1024)
+                data = wf.readframes(chunk_size_frame)
+                if equalizer:
+                    equalizer.equalizer_data_to_vizualize = data
+                    equalizer.now_audio_play = True
+                    # equalizer.chunk_size = chunk_size_frame
+                    # equalizer.audio_file = file_path
 
+            if equalizer:
+                equalizer.now_audio_play = False
+                equalizer.equalizer_data_to_vizualize = None
+                
             stream.stop_stream()
             stream.close()
 
+            
+
             p.terminate()
-        except PermissionError:
-            pass
+        # except PermissionError:
+        #     pass
+        except Exception as e:
+            print(e)
 
     @staticmethod
     def record_audio_and_save(save_path, n_times=50, input_device_index=0, sample_rate=44100, start=0):

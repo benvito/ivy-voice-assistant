@@ -7,6 +7,8 @@ io_devices:
     name: Default
 models:
   intent:
-    name: LUNA Speach-to-Intent (BETA)
+    name: LUNA Speech-to-Intent (BETA)
   wake_word:
     name: PicoVoice Porcupine
+  text-to-speech:
+    name: Windows TTS

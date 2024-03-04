@@ -59,8 +59,10 @@ class IMacro:
             elif type_macro == WATCH:
                 exec_watch_macros_thread = threading.Thread(name=self.path_to_command,
                                                             target=self.execute_watch_macro,
-                                                            args=(macro_dict[type_macro],))
+                                                            args=(macro_dict[type_macro],),
+                                                            daemon=True)
                 exec_watch_macros_thread.start()
+
 
     def execute_straight_macro(self,
                                macro : list):
@@ -76,10 +78,12 @@ class IMacro:
         for line in macro:
             command, value = self.read_command(line)
             if command == DEFINE:
-                print(self.current_img_data[IMG], self.current_img_data[TRIGGER])
-                while self.current_img_data[IMG] is None and trigger_stop != threading.current_thread().name:
-                    self.current_img_data = self.img_define(value)
-                    pyautogui.sleep(0.05)
+                threads = threading.enumerate()
+                threads_names = [thread.name for thread in threads]
+                if len(set(threads_names)) == len(threads_names):
+                    while self.current_img_data[IMG] is None and trigger_stop != threading.current_thread().name:
+                        self.current_img_data = self.img_define(value)
+                        pyautogui.sleep(0.1)
             else:
                 self.macro_commands[command](value)
 

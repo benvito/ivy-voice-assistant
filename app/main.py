@@ -59,11 +59,11 @@ class Luna:
     #     self._active = value
     #     if value:
     #         self.start_loop()
-    def restart_loop(self):
-        self.stop_loop()
+    async def restart_loop(self):
+        await self.stop_loop()
         if self.luna_thread.is_alive():
             self.emergency_stop_loop()
-        self.start_loop()
+        await self.start_loop()
         print('Luna loop has been restarted')
     
     def wait_for_thread_finish(self):
@@ -75,11 +75,11 @@ class Luna:
         ctypes.pythonapi.PyThreadState_SetAsyncExc(thread_id, ctypes.py_object(SystemExit))
         self.wait_for_thread_finish()
 
-    def stop_loop(self):
+    async def stop_loop(self):
         self.active = True
         # self.wait_for_thread_finish()
 
-    def start_loop(self):
+    async def start_loop(self):
         self.active = True
         self.luna_thread = threading.Thread(target=self.main_loop,
                                             daemon=True)
@@ -125,7 +125,9 @@ class Luna:
                 pass
             if keyword_index != -1:
                 wake_out = CommandExecutor.exec_nessesary_command(WAKE_UP, '')
+
                 LunaTTS.say(wake_out)
+
                 self.listen_to_command = True
                 voice_input = self.recognizer.listen()
                 self.process_command = True

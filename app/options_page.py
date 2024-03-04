@@ -245,7 +245,7 @@ class OptionsPage(ft.UserControl):
 
             self.save_options_button.disabled_button = True
 
-            self.luna.restart_loop()
+            await self.luna.restart_loop()
             
             await self.save_options_button.update_async()
 

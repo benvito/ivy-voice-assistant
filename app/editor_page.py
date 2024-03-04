@@ -640,7 +640,7 @@ class EditorPage(ft.UserControl):
     async def train_model_click(self, e : ft.ControlEvent):
         self.luna.cmd_recognizer.train_model()
         self.luna.init_command_recognizer()
-        self.luna.restart_loop()
+        await self.luna.restart_loop()
 
     async def on_open_command_dir_click(self, e : ft.ControlEvent):
         if self.editor_window.editing_dir is not None:
