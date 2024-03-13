@@ -48,7 +48,7 @@ class TextToSpeech(pyttsx3.Engine):
         self.output_device = Config.read_config()[IO_DEVICES][OUTPUT_DEVICE][INDEX]
     
     def say(self, text : str):
-        self.saying_thread = threading.Thread(target=self.say_thread_task, args=(text, ))
+        self.saying_thread = threading.Thread(name="TTS", target=self.say_thread_task, args=(text, ))
         self.saying_thread.daemon = True
         self.saying_thread.start()
 

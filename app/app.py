@@ -6,6 +6,7 @@ from pystray import MenuItem as item
 import pystray
 from PIL import Image
 import queue
+from pympler import asizeof
 
 from equalizer import Equalizer
 from background import Background
@@ -44,6 +45,18 @@ async def main(page: ft.Page):
     page.spacing = 0
     page.padding = 0
 
+    page.fonts = {
+        "Jura" : "fonts/Jura.ttf",
+    }
+
+    page.theme = ft.Theme(
+        font_family="Jura",
+        scrollbar_theme=ScrollBarTheme.DEFAULT,
+        color_scheme=ColorTheme.DEFAULT
+    )
+
+    page.bgcolor="black"
+
     page_sizes_width = {
         "XXS" : 1100,
         "XS" : 1400,
@@ -57,26 +70,27 @@ async def main(page: ft.Page):
     tasks_queue = queue.Queue()
 
     async def async_check_variables():
-        if main_page.equalizer_class.now_audio_play == True and page.route == Routes.MAIN_PAGE:
-            await main_page.equalizer_class.equalizer_click()
+        try:
+            if main_page.equalizer_class.now_audio_play == True and page.route == Routes.MAIN_PAGE and page.window_visible == True:
+                await main_page.equalizer_class.equalizer_click()
 
-        if tasks_queue.qsize() > 0:
-            task = tasks_queue.get()
-            await task()
-
+            if tasks_queue.qsize() > 0:
+                task = tasks_queue.get()
+                await task()
+        except Exception as e:
+            print(e)
 
     async def resize(e):
         page.window_height = page.window_height
         page.window_width = page.window_width
-        print(page.window_width, page.window_height)
+        print("Current window size: ", page.window_width, page.window_height)
         if page.route == Routes.MAIN_PAGE:
-            print("main page")
             main_page.center_items.scale = (page.window_width + page.window_height) / (page.window_max_width + page.window_max_height)
             await main_page.update_async()
             # asyncio.create_task(waiting_for_play())
             
         elif page.route == Routes.OPTIONS_PAGE:
-            print("options")
+            pass
         elif page.route == Routes.EDITOR_PAGE:
             editor_page.page_scale = 1 + ((page.window_max_width + page.window_max_height) - (page.window_width + page.window_height)) / 10000
             editor_page.frames_spacing = 26 * ((page.window_width + page.window_height) / (page.window_max_width + page.window_max_height))
@@ -90,7 +104,6 @@ async def main(page: ft.Page):
 
             await editor_page.update_async()
             
-            print("editor")
 
     
     async def on_window_event_handler(e):
@@ -104,7 +117,7 @@ async def main(page: ft.Page):
 
     async def route_change(e : ft.RouteChangeEvent):
         global check_equalizer
-        print(e.route)
+        print("Current route: ", e.route)
         if e.route == Routes.MAIN_PAGE:
             app.controls[cur_page] = main_page
             await app.update_async()
@@ -139,41 +152,37 @@ async def main(page: ft.Page):
 
     page.on_resize = resize
     
-    page.fonts = {
-        "Jura" : "fonts/Jura.ttf",
-    }
-
-    page.theme = ft.Theme(
-        font_family="Jura",
-        scrollbar_theme=ScrollBarTheme.DEFAULT,
-        color_scheme=ColorTheme.DEFAULT
-    )
-
-    page.bgcolor="black"
+    
     page.on_route_change = route_change
 
     
-
     def quit_window(icon, item):
         tasks_queue.put(page.window_close_async)
         tasks_queue.put(page.update_async)
 
     def show_window(icon, item):
         page.window_visible = True
+        tasks_queue.put(page.window_to_front_async)
         tasks_queue.put(page.update_async)
 
     async def withdraw_window(e):  
-        print("withdraw")
         page.window_visible = False
         await page.update_async()
         await asyncio.sleep(0.05)
 
-    image = Image.open("assets/icons/logo32.ico")
-    menu = (item('Quit',quit_window), item('Show', show_window))
-    icon = pystray.Icon("name", image, "title", menu)
+    thread_names = [thread.name for thread in list(threading.enumerate())]
+    if "tray" not in thread_names:
+        image = Image.open("assets/icons/logo32.ico")
+        menu = (item('Quit',quit_window), item('Show', show_window, default=True))
+        icon = pystray.Icon("Luna", image, "Luna", menu)
 
-    tray_thread = threading.Thread(target=icon.run, name="tray", daemon=True)
-    tray_thread.start()
+        tray_thread = threading.Thread(target=icon.run, name="tray", daemon=True)
+        tray_thread.start()
+
+    try:
+        icon.update_menu()
+    except:
+        pass
 
     check_equalizer = Periodic(async_check_variables, 0.05)
     await check_equalizer.start()
@@ -235,11 +244,10 @@ async def main(page: ft.Page):
                         page=page)
     
     LunaTTS.equalizer = main_page.equalizer_class
-    print("LunaTTS.equalizer: ", LunaTTS.equalizer)
     
     backgroud = Background(ft.RadialGradient(colors=[ft.colors.ON_BACKGROUND, ft.colors.BACKGROUND], radius=0.8))
     cur_page = 1
-    page.route = "/options"
+    page.route = "/"
     editor_page = EditorPage(page=page, luna=luna)
     options_page = OptionsPage(page=page, luna=luna)
     app = ft.Stack(

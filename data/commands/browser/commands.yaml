@@ -17,6 +17,8 @@ browser/open_youtube: # non-system
   speech_type: dynamic
   speech_list:
     - Ютуб открыт
+    - Мне нравятся видосики с котиками
+    - Сделано
 
 browser/open_telegram: # non-system
   phrases:
@@ -37,7 +39,9 @@ browser/open_telegram: # non-system
   link: https://web.telegram.org/
   speech_type: dynamic
   speech_list:
+    - Есть
     - Телеграам открыт
+    - Я и так вижу, кому ты пишешь
 
 browser/open_music: # non-system
   phrases:
@@ -56,4 +60,7 @@ browser/open_music: # non-system
   link: https://music.yandex.ru/home
   speech_type: dynamic
   speech_list:
-    - Телеграам открыт
+    - Уже открываю
+    - Яндекс музыка открыта
+    - Удачного прослушивания музыки
+    - Хорошей волны

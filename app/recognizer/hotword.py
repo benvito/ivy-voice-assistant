@@ -13,13 +13,15 @@ import pvporcupine
 
 
 class PicoVoiceHotWord:
+    __slots__ = ("porcupine", "access_key", "active")
     def __init__(
             self, 
             access_key_path : str = os.path.join(BASE_DIR, "data", "porcupine", "access_key.txt"),
             key_word_paths : list = [os.path.join(BASE_DIR, "models", "hotword_detection", "pico_voice", "porcupine_keyword.ppn")],
             model_path : str = os.path.join(BASE_DIR, "models", "hotword_detection", "pico_voice", "porcupine_model_ru.pv"),
             ) -> None:
-        self.access_key = self.read_access_key(access_key_path)
+        self.access_key = PicoVoiceHotWord.read_access_key(access_key_path)
+        
         self.porcupine = pvporcupine.create(
             access_key=self.access_key,
             keyword_paths=key_word_paths,
@@ -30,9 +32,15 @@ class PicoVoiceHotWord:
     def hotword_in_audio_frame(self, audio_frame):
         return self.porcupine.process(audio_frame)
 
-    def read_access_key(self, path):
+    @staticmethod
+    def read_access_key(path):
         with open(path) as f:
             return f.read().strip()
+    
+    @staticmethod    
+    def write_access_key(path, access_key):
+        with open(path, 'w') as f:
+            f.write(access_key)
 
 class HotwordModel:
     def __init__(

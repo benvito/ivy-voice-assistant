@@ -13,11 +13,13 @@ from config import BASE_DIR
 from utils.audio import Audio, PvRecorderAudio
 from recognizer.hotword import HotwordModel, PicoVoiceHotWord
 from config.constants import WAKE_UP
+from pvporcupine import PorcupineInvalidArgumentError
 
 logging.basicConfig(level=logging.INFO, filename=os.path.join(BASE_DIR, 'logs', 'log.log'), filemode='w')
 
 
 class Luna:
+    __slots__ = ("recognizer", "hotword", "recorder", "cmd_recognizer", "active", "listen_to_command", "process_command", "luna_thread")
     def __init__(self):
         self.recognizer = None
         self.hotword = None
@@ -32,7 +34,12 @@ class Luna:
         self.recognizer = SpeechRecognizerGoogle()
 
     def init_hotword(self):
-        self.hotword = PicoVoiceHotWord()
+        try:
+            self.hotword = PicoVoiceHotWord()
+        except PorcupineInvalidArgumentError as e:
+            print(e.message)
+            logging.warning(f"{e.message}")
+            self.hotword = None
 
     def init_recorder(self):
         self.recorder = PvRecorderAudio()
@@ -45,7 +52,9 @@ class Luna:
 
     def init(self):
         self.init_speech_recognizer()
+
         self.init_hotword()
+
         self.init_recorder()
         self.init_command_recognizer()
         self.init_tts()
@@ -81,9 +90,10 @@ class Luna:
 
     async def start_loop(self):
         self.active = True
-        self.luna_thread = threading.Thread(target=self.main_loop,
+        self.luna_thread = threading.Thread(name="luna_thread", target=self.main_loop,
                                             daemon=True)
         self.luna_thread.start()
+
     def main_loop(self):
         
 
@@ -175,4 +185,6 @@ class Luna:
         # cr = CommandRecongition()
         # command_class = cr.recognize_command(voice_input)
         # print(command_class)
+
+logging.shutdown()
 

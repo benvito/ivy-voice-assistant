@@ -8,9 +8,14 @@ from theme import *
 from utils.utils import IODevices
 from utils.yaml_utils import YamlData
 from config.config import Config
+from config import BASE_DIR
+from recognizer.hotword import PicoVoiceHotWord
+from pvporcupine import PorcupineInvalidArgumentError
 from config.constants import NAME, INDEX, IO_DEVICES, INPUT_DEVICE, OUTPUT_DEVICE
 from main import Luna
 import queue
+import os
+import enum
 
 
 class Option(ft.UserControl):
@@ -19,12 +24,21 @@ class Option(ft.UserControl):
                 popup_items : list = None,
                 popup_text : str = None,
                 option_name : str = None,
+                input : ft.TextField = None,
+                option_width : int = 400,
                  *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.control_type = control_type
         self.option_name = option_name
 
         self.popup_button_text = ft.Text(popup_text, size=TextSize.M, color=ft.colors.ON_TERTIARY, expand=10, no_wrap=True)
+
+        self.option_label = ft.Container(
+                                    ft.Text(option_name, size=TextSize.M, color=ft.colors.ON_TERTIARY),
+                                    margin=ft.margin.only(left=20),
+                                    expand=1
+                                )
+
         if self.control_type == "popup":
             self.option_button = ft.PopupMenuButton(
                                     content=ft.Row(
@@ -36,14 +50,8 @@ class Option(ft.UserControl):
                                     ),
                                     items=popup_items
                                 )
-        
-        self.option_label = ft.Container(
-                                    ft.Text(option_name, size=TextSize.M, color=ft.colors.ON_TERTIARY),
-                                    margin=ft.margin.only(left=20),
-                                    expand=1
-                                )
-
-        self.option_container = ft.Container(
+            
+            self.option_container = ft.Container(
                         ItemsRow(
                             [
                                 self.option_label,
@@ -54,18 +62,46 @@ class Option(ft.UserControl):
                                         margin=ft.margin.symmetric(horizontal=20),
                                     ),
                                     border_radius=15,
-                                    width=400,
+                                    width=option_width,
                                     border=ft.border.all(2, ft.colors.SECONDARY_CONTAINER), 
-                                    margin=10,
                                     alignment=ft.alignment.center,  
+                                    # margin=10,
                                 )
                             ],
                             alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
                             vertical_alignment=ft.CrossAxisAlignment.CENTER
                         ),
+                        margin=10,
                         alignment=ft.alignment.center_left,
                         height=70,                       
                     )
+            
+        elif self.control_type == "input":
+            self.option_button = input
+            self.option_button.border = ft.InputBorder.OUTLINE
+            self.option_button.border_color = ft.colors.SECONDARY_CONTAINER
+            self.option_button.border_radius = 15
+            self.option_button.border_width = 2
+            self.option_button.cursor_color = ft.colors.with_opacity(1, ft.colors.SECONDARY_CONTAINER)
+            self.option_button.selection_color = ft.colors.with_opacity(0.9, ft.colors.SECONDARY_CONTAINER)
+            self.option_container = ft.Container(
+                            ItemsRow(
+                                [
+                                    self.option_label,
+                                    ft.Container(
+                                        self.option_button,
+                                        height=100,
+                                        width=option_width,
+                                        alignment=ft.alignment.center,  
+                                    )
+                                ],
+                                alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                                vertical_alignment=ft.CrossAxisAlignment.CENTER
+                            ),
+                            margin=10,
+                            alignment=ft.alignment.center_left,
+                            height=70,                       
+                        )
 
         
     def build(self):
@@ -140,6 +176,25 @@ class CategoryOptions(ft.UserControl):
     def build(self):
         return self.category_options_with_label
 
+class OptionsSnackBars(enum.auto):
+    API_KEY_ERROR_PICOVOICE = ft.SnackBar(
+            ft.Text(
+                f"PicoVoice Porcupine: API-ключ не найден.", 
+                color=ft.colors.ON_ERROR, 
+                size=TextSize.XS), 
+            bgcolor=ft.colors.ERROR,
+            duration=5000
+            )
+    
+    PORCUPINE_CONNECTED = ft.SnackBar(
+            ft.Text(
+                f"PicoVoice Porcupine: подключен!", 
+                color=ft.colors.ON_SURFACE, 
+                size=TextSize.XS), 
+            bgcolor=ft.colors.SURFACE_VARIANT,
+            duration=5000
+            )
+
 class OptionsPage(ft.UserControl):
     def __init__(self, 
                  page : ft.Page = None,
@@ -196,6 +251,30 @@ class OptionsPage(ft.UserControl):
                            ]
             )
 
+        if self.luna.hotword is None:
+            print("PicoVoice Porcupine не подключен!")
+            self.page.snack_bar = OptionsSnackBars.API_KEY_ERROR_PICOVOICE
+            self.page.snack_bar.open = True
+        
+        self.models_setting_apikey = Option(control_type="input", 
+                           option_name="API-Ключ PicoVoice Porcupine",
+                           option_width=500,
+                           input=ft.TextField(
+                                value=PicoVoiceHotWord.read_access_key(os.path.join(BASE_DIR, "data", "porcupine", "access_key.txt")),
+                                label="API-Ключ PicoVoice Porcupine",
+                                label_style=ft.TextStyle(size=TextSize.XS, color=ft.colors.with_opacity(1, ft.colors.ON_TERTIARY)),
+                                text_align=ft.TextAlign.LEFT,
+                                text_style=ft.TextStyle(size=TextSize.XS, color=ft.colors.with_opacity(1, ft.colors.ON_TERTIARY)),
+                                on_change=self.change_apikey,
+                                password=True,
+                                can_reveal_password=True,
+                           )
+            )
+
+        self.models_setting_options = [
+            self.models_setting_apikey
+        ]
+
         self.system_setting_options = [
             self.system_setting_input,
             self.system_setting_output,
@@ -206,11 +285,17 @@ class OptionsPage(ft.UserControl):
                                 divider=ft.Divider(thickness=2),
                                 category_options=self.system_setting_options
                             )
+        
+        self.models_setting_category = CategoryOptions(
+                                category_label=ft.Text("НАСТРОЙКИ МОДЕЛЕЙ:", size=TextSize.XS, color=ft.colors.ON_TERTIARY),
+                                divider=ft.Divider(thickness=2),
+                                category_options=self.models_setting_options
+                            )
 
         self.options_column = ItemsColumn(
                         [
                             self.system_setting_category,
-                            
+                            self.models_setting_category       
                         ],
                         scroll=ft.ScrollMode.AUTO,
                         alignment=ft.MainAxisAlignment.START,
@@ -241,14 +326,32 @@ class OptionsPage(ft.UserControl):
             while not self.changed_options_functions.empty():
                 if not self.luna.listen_to_command and not self.luna.process_command:
                     to_update_function = self.changed_options_functions.get()
-                    to_update_function() 
+                    to_update_function()
 
+                    #PICOVOICE INIT
+                    if to_update_function == self.luna.init_hotword:
+                        if self.luna.hotword is not None:
+                            self.page.snack_bar = OptionsSnackBars.PORCUPINE_CONNECTED
+                            self.page.snack_bar.open = True
+                            await self.page.update_async()
+                        else:    
+                            self.page.snack_bar = OptionsSnackBars.API_KEY_ERROR_PICOVOICE
+                            self.page.snack_bar.open = True
+                            await self.page.update_async()
             self.save_options_button.disabled_button = True
 
             await self.luna.restart_loop()
             
             await self.save_options_button.update_async()
 
+    async def change_apikey(self, e : ft.ControlEvent):
+        try:
+            PicoVoiceHotWord.write_access_key(os.path.join(BASE_DIR, "data", "porcupine", "access_key.txt"), str(e.control.value))
+            self.changed_options_functions.put(self.luna.init_hotword)
+        except Exception as e:
+            print(e)
+        self.save_options_button.disabled_button = False
+        await self.save_options_button.update_async()
 
     async def add_category_options(self, category_option : CategoryOptions):
         self.options_column.controls.append(category_option)

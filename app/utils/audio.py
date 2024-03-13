@@ -7,6 +7,7 @@ from config.config import Config
 import struct
 from equalizer import Equalizer
 import asyncio
+import logging
 
 
 class PvRecorderAudio(PvRecorder):
@@ -58,6 +59,7 @@ class Audio:
                 if equalizer:
                     equalizer.equalizer_data_to_vizualize = data
                     equalizer.now_audio_play = True
+                    
                     # equalizer.chunk_size = chunk_size_frame
                     # equalizer.audio_file = file_path
 
@@ -75,6 +77,7 @@ class Audio:
         #     pass
         except Exception as e:
             print(e)
+            logging.critical(f"{e.__class__} : {e}")
 
     @staticmethod
     def record_audio_and_save(save_path, n_times=50, input_device_index=0, sample_rate=44100, start=0):
