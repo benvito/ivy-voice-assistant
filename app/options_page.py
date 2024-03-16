@@ -6,13 +6,13 @@ from frames import Frame
 from buttons import ClassicButton, ButtonStyle, ContentButton
 from theme import *
 from utils.utils import IODevices
-from utils.yaml_utils import YamlData
+# from utils.yaml_utils import YamlData
 from config.config import Config
 from config import BASE_DIR
 from recognizer.hotword import PicoVoiceHotWord
-from pvporcupine import PorcupineInvalidArgumentError
+# from pvporcupine import PorcupineInvalidArgumentError
 from config.constants import NAME, INDEX, IO_DEVICES, INPUT_DEVICE, OUTPUT_DEVICE
-from main import Luna
+from luna_main import Luna
 import queue
 import os
 import enum

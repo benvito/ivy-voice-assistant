@@ -1,5 +1,5 @@
 import speech_recognition as sr
-from vosk import Model, KaldiRecognizer
+# from vosk import Model, KaldiRecognizer
 from utils.yaml_utils import YamlData
 from config.config import Config
 from speech_synthesis.tts import LunaTTS

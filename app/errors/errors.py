@@ -5,6 +5,7 @@ class SayException(Exception):
     def say(self):
         if self.say_message != '':
             LunaTTS.say(self.say_message)
+            
 
     def __str__(self):
         return self.message

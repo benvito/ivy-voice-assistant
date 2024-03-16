@@ -1,7 +1,7 @@
 import flet as ft
 import os
 import asyncio
-import keyboard
+# import keyboard
 import pyautogui
 import numpy as np
 import enum
@@ -11,7 +11,7 @@ from frames import Frame, SwitchableWindow
 from buttons import ClassicButton, ButtonStyle, ContentButton
 from theme import *
 from utils.yaml_utils import YamlData
-from main import Luna
+from luna_main import Luna
 
 class EmptyContentText(enum.auto):
     NONE = ft.Text('', color=ft.colors.ON_PRIMARY)

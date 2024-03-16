@@ -1,22 +1,28 @@
 import yaml
 from utils.decorators import exec_timer
 import os
-from attrdict import AttrDict
 from config import BASE_DIR
+
+# FOR DEVELOPMENT
+# PATH_TO_CONFIG = os.path.join(BASE_DIR, "app", "config", "config.yaml")
+
+# FOR BUILD
+PATH_TO_CONFIG = os.path.join("data", "config.yaml")
+
 
 class Config:
     @staticmethod
     @exec_timer
-    def read_config() -> AttrDict:
-        with open(os.path.join(BASE_DIR, "app", "config", "config.yaml"), 'r', encoding="utf-8") as file:
+    def read_config() -> dict:
+        with open(PATH_TO_CONFIG, 'r', encoding="utf-8") as file:
             yaml_conf =  yaml.safe_load(file)
 
-        return AttrDict(yaml_conf)
+        return yaml_conf
         
     @staticmethod
     @exec_timer
-    def write_config(config : AttrDict):
-        if type(config) == AttrDict:
+    def write_config(config : dict):
+        if type(config) != dict:
             config = dict(config)
-        with open(os.path.join(BASE_DIR, "app", "config", "config.yaml"), 'w', encoding="utf-8") as file:
+        with open(PATH_TO_CONFIG, 'w', encoding="utf-8") as file:
             yaml.dump(config, file)

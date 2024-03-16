@@ -1,7 +1,7 @@
 import flet as ft
 from buttons import SideBarButton, ButtonStyle   
 from theme import *
-from main import Luna
+from luna_main import Luna
 from enum import auto
 
 

@@ -8,17 +8,18 @@ import struct
 from equalizer import Equalizer
 import asyncio
 import logging
+from config.constants import IO_DEVICES, INPUT_DEVICE, NAME, INDEX
 
 
 class PvRecorderAudio(PvRecorder):
     def __init__(self, *args, **kwargs):
-        self.input_device_dict = Config.read_config().io_devices.input_device
-        if self.input_device_dict.index == 0:
+        self.input_device_dict = Config.read_config()[IO_DEVICES][INPUT_DEVICE]
+        if self.input_device_dict[INDEX] == 0:
             self.input_device_index = -1
         else:
             available_input_devices = self.get_available_devices()
             for i, name in enumerate(available_input_devices):
-                if name.startswith(self.input_device_dict.name):
+                if name.startswith(self.input_device_dict[NAME]):
                     self.input_device_index = i
                     break
             else:

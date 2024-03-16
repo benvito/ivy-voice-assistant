@@ -1,11 +1,13 @@
 import flet as ft
 import random as rnd
 import asyncio
-import librosa
+# import librosa
 import numpy as np
 import os
 from config import BASE_DIR
 from utils.decorators import exec_timer
+import time as t
+from routing import Routes
 
 from periodic_task import Periodic
 
@@ -105,7 +107,12 @@ class Equalizer(ft.UserControl):
     def audio_file(self, value):
         self._audio_file = value
     
-
+    async def active_equalizer(self):
+        while self.page.route == Routes.MAIN_PAGE:
+            while self.now_audio_play:
+                await self.equalizer_click()
+                await asyncio.sleep(0.15)
+            await asyncio.sleep(0.2)
 
     def normalize(self, xi):
         min = np.min(xi)

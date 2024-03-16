@@ -1,7 +1,7 @@
 from utils.audio import Audio
 import os
 from config import BASE_DIR
-from config.config import Config
+# from config.config import Config
 import librosa
 import numpy as np
 import pandas as pd
@@ -34,6 +34,9 @@ class PicoVoiceHotWord:
 
     @staticmethod
     def read_access_key(path):
+        if not os.path.exists(path):
+            with open(path, 'w') as f:
+                f.write('-')
         with open(path) as f:
             return f.read().strip()
     
