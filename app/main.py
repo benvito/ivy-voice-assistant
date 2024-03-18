@@ -24,7 +24,7 @@ from speech_synthesis.tts import LunaTTS
 
 async def main(page: ft.Page):
     page.title = "Luna"
-    
+
     page.vertical_alignment = ft.MainAxisAlignment.START
     page.window_maximized = True
     page.window_title_bar_buttons_hidden = True

@@ -5,3 +5,6 @@ dist
 build
 *.spec
 temp/*
+Output
+.iss
+build_things
