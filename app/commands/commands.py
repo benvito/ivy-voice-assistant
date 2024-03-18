@@ -16,7 +16,7 @@ from config.constants import *
 from errors.errors import *
 from utils.yaml_utils import YamlData
 from utils.utils import Time, WordNum, StringProcessing
-from config import BASE_DIR
+from config import COMMANDS_PATH
 from commands.img_macro import IMacro
 from commands.arguments_process import ArgumentsProcessor
 
@@ -140,9 +140,9 @@ class CommandProcessor:
     @staticmethod
     def unknown_command() -> str:
         try:
-            command = YamlData.read_file(os.path.join(BASE_DIR, 'data', 'commands', 'unknown_command.yaml'))
+            command = YamlData.read_file(os.path.join(COMMANDS_PATH, 'unknown_command.yaml'))
         except FileNotFoundError as e:
-            raise FileNotExists(path=os.path.join(BASE_DIR, 'data', 'commands', 'unknown_command.yaml'))
+            raise FileNotExists(path=os.path.join(COMMANDS_PATH, 'unknown_command.yaml'))
         return CommandProcessor.create_speech_output(speech_type=command[SPEECH_TYPE],
                                                     speech_list=command[SPEECH_LIST],
                                                     command_class='')
@@ -150,9 +150,9 @@ class CommandProcessor:
     @staticmethod
     def wake_up() -> str:
         try:
-            command = YamlData.read_file(os.path.join(BASE_DIR, 'data', 'commands', 'wake_up.yaml'))
+            command = YamlData.read_file(os.path.join(COMMANDS_PATH, 'wake_up.yaml'))
         except FileNotFoundError as e:
-            raise FileNotExists(path=os.path.join(BASE_DIR, 'data', 'commands', 'wake_up.yaml'))
+            raise FileNotExists(path=os.path.join(COMMANDS_PATH, 'wake_up.yaml'))
         return CommandProcessor.create_speech_output(speech_type=command[SPEECH_TYPE],
                                                     speech_list=command[SPEECH_LIST],
                                                     command_class='')

@@ -4,7 +4,7 @@ import asyncio
 # import librosa
 import numpy as np
 import os
-from config import BASE_DIR
+from config import TEMP_PATH
 from utils.decorators import exec_timer
 import time as t
 from routing import Routes
@@ -23,7 +23,7 @@ class Equalizer(ft.UserControl):
                  equalizer_speed_dance=0.0155,
                  equalizer_bars_animation=ft.Animation(125, ft.AnimationCurve.EASE_IN_OUT),
                  equalizer_color=ft.colors.SURFACE,
-                 audio_file=os.path.join(BASE_DIR, 'temp', 'luna_answer.mp3')) -> None:
+                 audio_file=os.path.join(TEMP_PATH, 'luna_answer.mp3')) -> None:
         super().__init__()
         self.equalizer_strength = equalizer_strength
 

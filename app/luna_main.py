@@ -9,13 +9,13 @@ from recognizer.speech_recognizer import SpeechRecognizerGoogle
 from recognizer.command_recongnizer import CommandRecongitionModel, CommandRecongition
 from commands.commands import CommandExecutor
 from speech_synthesis.tts import TextToSpeech, LunaTTS
-from config import BASE_DIR
+from config import LOGS_PATH
 from utils.audio import Audio, PvRecorderAudio
 from recognizer.hotword import HotwordModel, PicoVoiceHotWord
 from config.constants import WAKE_UP
 from pvporcupine import PorcupineInvalidArgumentError
 
-logging.basicConfig(level=logging.INFO, filename=os.path.join(BASE_DIR, 'logs', 'log.log'), filemode='w')
+logging.basicConfig(level=logging.INFO, filename=LOGS_PATH, filemode='w')
 
 
 class Luna:

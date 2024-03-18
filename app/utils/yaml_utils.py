@@ -4,7 +4,7 @@ import shutil
 
 from config.constants import PATH
 from utils.decorators import exec_timer
-from config import BASE_DIR
+from config import BASE_DIR, COMMANDS_PATH
 import logging
 from errors.errors import SyntaxYamlError
 
@@ -12,7 +12,7 @@ from errors.errors import SyntaxYamlError
 class YamlData:
     @staticmethod
     def get_program_path(program_name : str) -> str:
-        yaml_path = os.path.join(BASE_DIR, 'data', 'commands', 'programs.yaml')
+        yaml_path = os.path.join(COMMANDS_PATH, 'programs.yaml')
         programs_data = dict(yaml.safe_load(open(yaml_path, 'r', encoding='utf-8')))
         program_path = os.path.normpath(programs_data[program_name][PATH])
         if 'username' in program_path:
@@ -23,13 +23,13 @@ class YamlData:
     @exec_timer
     def path_to_command(command_class : str) -> str:
         command_folder = command_class.split('/')[0]
-        return os.path.join(BASE_DIR, 'data', 'commands', command_folder)
+        return os.path.join(COMMANDS_PATH, command_folder)
 
     @staticmethod
     @exec_timer
     def load_command_data(command_class : str) -> dict:
         command_folder = command_class.split('/')[0]
-        yaml_path = os.path.join(BASE_DIR, 'data', 'commands', command_folder, 'commands.yaml')
+        yaml_path = os.path.join(COMMANDS_PATH, command_folder, 'commands.yaml')
         command_data = dict(yaml.safe_load(open(yaml_path, 'r', encoding='utf-8')))
         return command_data
 
@@ -37,7 +37,7 @@ class YamlData:
     @exec_timer
     def load_all_commands_dict() -> dict:
         commands = dict()
-        for dirName, subdirList, fileList in os.walk(os.path.join(BASE_DIR, 'data', 'commands')):
+        for dirName, subdirList, fileList in os.walk(COMMANDS_PATH):
             if "commands.yaml" in fileList:
                 try:
                     commands.update(dict(yaml.safe_load(open(os.path.join(dirName, 'commands.yaml'), 'r', encoding='utf-8'))))
@@ -72,7 +72,7 @@ class YamlData:
     @exec_timer
     def load_all_commands_folders() -> dict:
         commands_folders = dict()
-        for dirName, subdirList, fileList in os.walk(os.path.join(BASE_DIR, 'data', 'commands')):
+        for dirName, subdirList, fileList in os.walk(COMMANDS_PATH):
             if "commands.yaml" in fileList:
                 commands_folders[dirName.split(os.sep)[-1]] = dirName
         return commands_folders
@@ -88,7 +88,7 @@ class YamlData:
     @staticmethod
     @exec_timer
     def create_command_folder(command_folder_name : str):
-        path_to_command = os.path.join(BASE_DIR, 'data', 'commands', command_folder_name)
+        path_to_command = os.path.join(COMMANDS_PATH, command_folder_name)
         os.mkdir(path_to_command)
         file_descriptor = os.open(os.path.join(path_to_command, 'commands.yaml'), os.O_CREAT | os.O_WRONLY)
         os.close(file_descriptor)
@@ -97,7 +97,7 @@ class YamlData:
     @exec_timer
     def delete_command_folder(command_folder_name : str):
         print(command_folder_name)
-        path_to_command = os.path.join(BASE_DIR, 'data', 'commands', command_folder_name)
+        path_to_command = os.path.join(COMMANDS_PATH, command_folder_name)
         shutil.rmtree(path_to_command)
 
     @staticmethod

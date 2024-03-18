@@ -14,7 +14,7 @@ class AppTitleBar(ft.Row):
         self.title_margin = 6
         self.title_color = ft.colors.OUTLINE_VARIANT
         self.title_height = 32
-        self.luna_text = "LUNA V1.0"
+        self.luna_text = "LUNA BETA 0.0.1"
         self.luna_text_size = TextSize.XS
         self.title_buttons_scale = 0.6
         self.opacity_elements = 0.5

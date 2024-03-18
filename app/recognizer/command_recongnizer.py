@@ -8,7 +8,7 @@ from sklearn.metrics import accuracy_score
 import joblib
 import numpy as np
 from utils.decorators import exec_timer
-from config import BASE_DIR
+from config import MODELS_PATH
 from config.constants import PHRASES, PHRASE_VAR, COMMAND_THRESHOLD, COMMAND_RATIO_THRESHOLD
 from utils.yaml_utils import YamlData
 import re
@@ -59,9 +59,9 @@ def execute_commands_for_learning(commands : dict):
 
 class CommandRecongitionModel:
     def __init__(self):
-        self.model_path = os.path.join(BASE_DIR, 'models', 'command_detection', 'commands_detection.joblib')
-        self.vectorizer_path = os.path.join(BASE_DIR, 'models', 'command_detection', 'commands_vectorizer.joblib')
-        self.test_data_path = os.path.join(BASE_DIR, 'models', 'command_detection', 'commands_detection_test_data.yaml')
+        self.model_path = os.path.join(MODELS_PATH, 'command_detection', 'commands_detection.joblib')
+        self.vectorizer_path = os.path.join(MODELS_PATH, 'command_detection', 'commands_vectorizer.joblib')
+        self.test_data_path = os.path.join(MODELS_PATH, 'command_detection', 'commands_detection_test_data.yaml')
     
     @exec_timer
     def train_model(self):

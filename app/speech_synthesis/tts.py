@@ -8,7 +8,7 @@ import asyncio
 from utils.audio import Audio
 from config.config import Config
 from config.constants import IO_DEVICES, OUTPUT_DEVICE, INDEX
-from config import BASE_DIR
+from config import TEMP_PATH
 from equalizer import Equalizer
 
 
@@ -18,7 +18,7 @@ class TextToSpeech(pyttsx3.Engine):
             self, 
             name : str, 
             rate : int,
-            answer_file_name : str = os.path.join(BASE_DIR, 'temp', 'luna_answer.mp3')
+            answer_file_name : str = os.path.join(TEMP_PATH, 'luna_answer.mp3')
             ) -> pyttsx3.Engine:
         super().__init__()
         self.answer_file_name = answer_file_name
@@ -58,14 +58,14 @@ class TextToSpeech(pyttsx3.Engine):
         if text:
             if ttsEngine._inLoop:
                 ttsEngine.endLoop()
-            path_to_answer = os.path.join(os.path.abspath(os.curdir), self.answer_file_name)
+            path_to_answer = self.answer_file_name
+            print(path_to_answer)
             if os.path.exists(path_to_answer):
                 os.remove(path_to_answer)
             ttsEngine.save_to_file(text, path_to_answer)
             ttsEngine.runAndWait()
 
             if os.path.exists(path_to_answer):
-                # Audio.play_mono_audio(os.path.join(os.path.abspath(os.curdir), BASE_DIR, 'temp', "gg.wav"), self.output_device, equalizer=self.equalizer)
                 Audio.play_mono_audio(path_to_answer, self.output_device, equalizer=self.equalizer)
                 # os.remove(path_to_answer)
 

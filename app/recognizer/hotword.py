@@ -1,6 +1,6 @@
 from utils.audio import Audio
 import os
-from config import BASE_DIR
+from config import DATA_MODELS_PATH, MODELS_PATH
 # from config.config import Config
 import librosa
 import numpy as np
@@ -13,12 +13,12 @@ import pvporcupine
 
 
 class PicoVoiceHotWord:
-    __slots__ = ("porcupine", "access_key", "active")
+    __slots__ = ("porcupine", "access_key")
     def __init__(
             self, 
-            access_key_path : str = os.path.join(BASE_DIR, "data", "porcupine", "access_key.txt"),
-            key_word_paths : list = [os.path.join(BASE_DIR, "models", "hotword_detection", "pico_voice", "porcupine_keyword.ppn")],
-            model_path : str = os.path.join(BASE_DIR, "models", "hotword_detection", "pico_voice", "porcupine_model_ru.pv"),
+            access_key_path : str = os.path.join(DATA_MODELS_PATH, "hotword", "porcupine", "access_key.txt"),
+            key_word_paths : list = [os.path.join(MODELS_PATH, "hotword_detection", "pico_voice", "porcupine_keyword.ppn")],
+            model_path : str = os.path.join(MODELS_PATH, "hotword_detection", "pico_voice", "porcupine_model_ru.pv"),
             ) -> None:
         self.access_key = PicoVoiceHotWord.read_access_key(access_key_path)
         
@@ -49,7 +49,7 @@ class HotwordModel:
     def __init__(
             self, 
             hotword="эй луна", 
-            path=os.path.join(BASE_DIR, "data", "train_data", "hotword_data"),
+            path=os.path.join(DATA_MODELS_PATH, "hotword", "luna_hotword", "train_data"),
             threshold=0.95,
             sample_rate=44100,
             csv_name="hotword_audio_data.csv",
@@ -149,7 +149,7 @@ class HotwordModel:
             epochs=1000,
         )
         
-        model.save(os.path.join(BASE_DIR, "models", "hotword_detection", "WWD.keras"))
+        model.save(os.path.join(MODELS_PATH, "hotword_detection", "luna_hotword", "WWD.keras"))
 
         score = model.evaluate(X_test, y_test)
         print(score)
@@ -161,8 +161,8 @@ class HotwordModel:
         print(classification_report(y_test, y_pred))
 
     def load_model(self):
-        if os.path.exists(os.path.join(BASE_DIR, "models", "hotword_detection", "WWD.keras")):
-            self.model = tf.keras.models.load_model(os.path.join(BASE_DIR, "models", "hotword_detection", "WWD.keras"))
+        if os.path.exists(os.path.join(MODELS_PATH, "hotword_detection", "luna_hotword", "WWD.keras")):
+            self.model = tf.keras.models.load_model(os.path.join(MODELS_PATH, "hotword_detection", "luna_hotword", "WWD.keras"))
         else:
             self.model = None
 

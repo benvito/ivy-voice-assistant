@@ -1,0 +1,21 @@
+INFO:flet_runtime:Assets path configured: D:\ProjectsProgramming\Ivy\app\assets
+INFO:flet_runtime:Starting up TCP server on localhost:59902
+INFO:flet_runtime:Flet app has started...
+INFO:flet_runtime:App URL: tcp://localhost:59902
+INFO:flet_runtime:Starting Flet View app...
+INFO:flet_runtime:Flet View found in: D:\ProjectsProgramming\Ivy\venv\lib\site-packages\flet\bin\flet\flet.exe
+INFO:flet_runtime:App session started
+ERROR:asyncio:Task exception was never retrieved
+future: <Task finished name='Task-18' coro=<Equalizer.active_equalizer() done, defined at D:\ProjectsProgramming\Ivy\app\equalizer.py:110> exception=AttributeError("'NoneType' object has no attribute 'route'")>
+Traceback (most recent call last):
+  File "D:\ProjectsProgramming\Ivy\app\equalizer.py", line 111, in active_equalizer
+    while self.page.route == Routes.MAIN_PAGE:
+AttributeError: 'NoneType' object has no attribute 'route'
+ERROR:asyncio:Task exception was never retrieved
+future: <Task finished name='Task-70' coro=<Equalizer.active_equalizer() done, defined at D:\ProjectsProgramming\Ivy\app\equalizer.py:110> exception=ValueError('buffer size must be a multiple of element size')>
+Traceback (most recent call last):
+  File "D:\ProjectsProgramming\Ivy\app\equalizer.py", line 113, in active_equalizer
+    await self.equalizer_click()
+  File "D:\ProjectsProgramming\Ivy\app\equalizer.py", line 168, in equalizer_click
+    signal = np.frombuffer(self.equalizer_data_to_vizualize, dtype=np.int32)
+ValueError: buffer size must be a multiple of element size

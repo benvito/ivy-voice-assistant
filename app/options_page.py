@@ -8,7 +8,7 @@ from theme import *
 from utils.utils import IODevices
 # from utils.yaml_utils import YamlData
 from config.config import Config
-from config import BASE_DIR
+from config import DATA_MODELS_PATH
 from recognizer.hotword import PicoVoiceHotWord
 # from pvporcupine import PorcupineInvalidArgumentError
 from config.constants import NAME, INDEX, IO_DEVICES, INPUT_DEVICE, OUTPUT_DEVICE
@@ -260,7 +260,7 @@ class OptionsPage(ft.UserControl):
                            option_name="API-Ключ PicoVoice Porcupine",
                            option_width=500,
                            input=ft.TextField(
-                                value=PicoVoiceHotWord.read_access_key(os.path.join(BASE_DIR, "data", "porcupine", "access_key.txt")),
+                                value=PicoVoiceHotWord.read_access_key(os.path.join(DATA_MODELS_PATH, "hotword", "porcupine", "access_key.txt")),
                                 label="API-Ключ PicoVoice Porcupine",
                                 label_style=ft.TextStyle(size=TextSize.XS, color=ft.colors.with_opacity(1, ft.colors.ON_TERTIARY)),
                                 text_align=ft.TextAlign.LEFT,
@@ -346,7 +346,7 @@ class OptionsPage(ft.UserControl):
 
     async def change_apikey(self, e : ft.ControlEvent):
         try:
-            PicoVoiceHotWord.write_access_key(os.path.join(BASE_DIR, "data", "porcupine", "access_key.txt"), str(e.control.value))
+            PicoVoiceHotWord.write_access_key(os.path.join(DATA_MODELS_PATH, "hotword", "porcupine", "access_key.txt"), str(e.control.value))
             self.changed_options_functions.put(self.luna.init_hotword)
         except Exception as e:
             print(e)

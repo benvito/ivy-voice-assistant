@@ -1,0 +1,84 @@
+programs/notepad:
+  phrases:
+    - открой блокнот
+    - включи блокнот
+    - открой в блокноте
+    - запусти блокнот
+    - блокнот
+  command_type: openProgram
+  program: Notepad
+  speech_type: dynamic
+  speech_list:
+    - Блокнот открыт
+
+programs/calculator:
+  phrases:
+    - открой калькулятор
+    - включи калькулятор
+    - запусти калькулятор
+    - калькулятор
+  command_type: openProgram
+  program: Calculator
+  speech_type: dynamic
+  speech_list:
+    - Калькулятор открыт
+  
+programs/explorer:
+  phrases:
+    - откруй проводник
+    - включи проводник
+    - запусти проводник
+    - проводник
+  command_type: openProgram
+  program: Explorer
+  speech_type: dynamic
+  speech_list:
+    - Проводник открыт
+
+programs/task_manager:
+  phrases:
+    - открой диспетчер задач
+    - включи диспетчер задач
+    - запусти диспетчер задач
+    - диспетчер задач
+  command_type: openProgram
+  program: Task Manager
+  speech_type: dynamic
+  speech_list:
+    - Диспетчер задач открыт
+
+programs/visual_studio_code:
+  phrases:
+    - открой [visual_studio_code]
+    - включи [visual_studio_code]
+    - запусти [visual_studio_code]
+    - "[visual_studio_code]"
+  phrase_var:
+    visual_studio_code:
+      - visual studio code
+      - vs code
+      - вс код
+      - визуал студио код
+  command_type: openProgram
+  program: Visual Studio Code
+  speech_type: dynamic
+  speech_list:
+    - Visual Studio Code открыт
+
+programs/cmd:
+  phrases:
+    - открой [cmd]
+    - включи [cmd]
+    - запусти [cmd]
+    - "[cmd]"
+  phrase_var:
+    cmd:
+      - цмд
+      - cmd
+      - консоль
+      - командная строка
+  command_type: openProgram
+  program: Cmd
+  speech_type: dynamic
+  speech_list:
+    - Консоль открыта
