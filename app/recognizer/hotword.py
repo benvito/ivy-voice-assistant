@@ -35,6 +35,7 @@ class PicoVoiceHotWord:
     @staticmethod
     def read_access_key(path):
         if not os.path.exists(path):
+            os.makedirs(os.path.dirname(path), exist_ok=True)
             with open(path, 'w') as f:
                 f.write('-')
         with open(path) as f:
