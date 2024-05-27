@@ -118,7 +118,7 @@ uvicorn==0.28.0
 watchdog==4.0.0
 watchfiles==0.21.0
 websockets==12.0
-Werkzeug==3.0.1
+Werkzeug==3.0.3
 wheel==0.43.0
 Wikipedia-API==0.6.0
 wrapt==1.16.0
